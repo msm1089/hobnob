@@ -2,7 +2,7 @@ import '@babel/polyfill';
 import http from 'http';
 
 const requestHandler = function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('Hello, linted!');
 };
 const server = http.createServer(requestHandler);
