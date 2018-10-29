@@ -5,13 +5,12 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf dist && babel src -d dist",
-    "serve": "yarn run build && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
     "lint": "eslint src",
-    "precommit": "yarn run fix && yarn run lint",
-	"test:e2e": "cucumber-js spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps"
+    "serve": "yarn run build && dotenv node dist/index.js",
+    "test:e2e": "dotenv cucumber-js -- spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps"
   },
   "repository": {
     "type": "git",
@@ -26,14 +25,21 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/register": "^7.0.0",
     "cucumber": "^5.0.2",
+    "dotenv-cli": "^1.4.0",
     "eslint": "^5.8.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "husky": "^1.1.2",
     "nodemon": "^1.18.5",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "superagent": "^4.0.0-beta.5"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run fix && yarn run lint"
+    }
   }
 }
