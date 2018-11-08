@@ -27,6 +27,7 @@ When(/^attaches a generic (.+) payload$/, function(payloadType) {
         .set('Content-Type', 'text/xml');
       break;
     case 'empty':
+      this.request.send().set('Content-Length', '0');
     default:
   }
 });
