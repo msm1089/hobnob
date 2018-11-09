@@ -41,7 +41,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn run fix && yarn run lint"
+      "pre-commit": "yarn run fix && yarn run lint && yarn run fix"
     }
   }
 }
