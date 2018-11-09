@@ -72,3 +72,7 @@ Then(/^contains a message property which says (?:"|')(.*)(?:"|')$/, function(
 ) {
   assert.equal(this.responsePayload.message, message);
 });
+
+When(/^without a (?:"|')([\w-]+)(?:"|') header set$/, function(headerName) {
+  this.request.unset(headerName);
+});
