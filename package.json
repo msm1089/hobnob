@@ -9,7 +9,8 @@
     "watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
     "lint": "eslint src",
-    "serve": "yarn run build && dotenv node dist/index.js",
+    "precommit": "yarn run lint",
+    "serve": "node killserver && yarn run build && dotenv node dist/index.js",
     "test:e2e": "dotenv cucumber-js -- spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps"
   },
   "repository": {
@@ -35,6 +36,7 @@
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "7.11.0",
     "husky": "^1.1.2",
+    "node-powershell": "^3.3.1",
     "nodemon": "^1.18.5",
     "prettier": "^1.15.1",
     "rimraf": "^2.6.2",
