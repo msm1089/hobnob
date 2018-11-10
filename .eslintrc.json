@@ -1,6 +1,7 @@
 {
-    "extends": "airbnb-base",
-	"rules": {
-        "func-names": ["error", "as-needed"]
-    }
+  "extends": ["airbnb", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": ["error"]
+  }
 }
