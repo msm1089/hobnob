@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf dist && babel src -d dist",
-    "serve": "yarn run build && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
     "lint": "eslint src",
-    "precommit": "yarn run fix && yarn run lint"
+    "precommit": "yarn run fix && yarn run lint",
+    "serve": "node killserver && yarn run build && dotenv node dist/index.js",
+    "test:e2e": "dotenv cucumber-js -- spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "husky": "^1.1.2",
+    "node-powershell": "^3.3.1",
     "nodemon": "^1.18.5",
     "rimraf": "^2.6.2"
   },
