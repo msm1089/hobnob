@@ -66,3 +66,13 @@ Feature: Create User
     | a238juqy2 |
     | a@1.2.3.4 |
     | a,b,c@!!  |
+
+  Scenario: Minimal Valid User
+
+    When the client creates a POST request to /users
+      And attaches a valid Create User payload
+      And sends the request
+    Then our API should respond with a 201 HTTP status code
+      And the payload of the response should be a string
+      And the payload object should be added to the database, grouped under the "user" type
+      And the newly-created user should be deleted
