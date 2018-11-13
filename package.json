@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && babel src -d dist",
+    "build": "yarn run es-start && rimraf dist && babel src -d dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon -w src --exec yarn run serve",
+    "es-start": "es-start.bat",
+    "es-stop": "es-stop.bat",
     "fix": "eslint src --fix",
     "lint": "eslint src",
     "precommit": "yarn run lint",
