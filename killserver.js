@@ -4,7 +4,8 @@ let ps = new shell({
   noProfile: true
 });
 
-ps.addCommand('taskkill /PID (netstat -ano | findstr :8080 | select -First 1).Replace(" ","").split("G")[1] /F')
+const cmdStr = `taskkill /PID (netstat -ano | findstr :${process.env.SERVER_PORT} | select -First 1).Replace(" ","").split("G")[1] /F`
+ps.addCommand(cmdStr)
 ps.invoke().then(output => {
   console.log(output);
   ps.dispose();

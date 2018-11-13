@@ -7,6 +7,7 @@
     "build": "yarn run es-start && rimraf dist && babel src -d dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon -w src --exec yarn run serve",
+    "watch-test": "npx dotenv -e envs/test.env yarn run watch",
     "es-start": "es-start.bat",
     "es-stop": "es-stop.bat",
     "fix": "eslint src --fix",
