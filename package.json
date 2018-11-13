@@ -12,8 +12,8 @@
     "fix": "eslint src --fix",
     "lint": "eslint src",
     "precommit": "yarn run lint",
-    "serve": "node killserver && yarn run build && dotenv node dist/index.js",
-    "test:e2e": "dotenv cucumber-js -- spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps"
+    "test:e2e": "dotenv -e envs/test.env -e envs/.env cucumber-js -- spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps",
+    "serve": "node killserver && yarn run build && dotenv -e envs/.env node dist/index.js"
   },
   "repository": {
     "type": "git",

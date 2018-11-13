@@ -86,7 +86,7 @@ app.post('/users', (req, res) => {
   }
   client
     .index({
-      index: 'hobnob',
+      index: process.env.ELASTICSEARCH_INDEX,
       type: 'user',
       body: req.body
     })
