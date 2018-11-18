@@ -12,3 +12,4 @@ if ! netstat -aon | grep "0.0.0.0:$SERVER_PORT" | grep "LISTENING"; then
 fi > /dev/null
 echo Running tests...
 npx cucumber-js spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps
+pm2 delete all
