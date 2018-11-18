@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && babel src -d dist",
+    "build": "rimraf dist && babel src -d dist --copy-files",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon -w src --exec yarn run serve",
     "watch-test": "npx dotenv -e envs/test.env yarn run watch",
@@ -17,7 +17,7 @@
     "lint": "eslint src",
     "precommit": "yarn run lint",
     "test:e2e": "dotenv -e envs/test.env -e envs/.env ./scripts/e2e.test.sh",
-    "serve": "yarn run build && node dist/index.js"
+    "serve": "yarn run build && dotenv -e envs/test.env -e envs/.env && node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
+    "ajv": "^6.5.5",
     "body-parser": "^1.18.3",
     "elasticsearch": "^15.2.0",
     "express": "^4.16.4"

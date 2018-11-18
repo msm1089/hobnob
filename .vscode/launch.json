@@ -4,9 +4,18 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Launch via NPM",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "test:e2e"],
+      "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Node",
       "program": "${file}",
-      "protocol": "inspector"
+      "protocol": "inspector",
+      "skipFiles": ["${workspaceFolder}/node_modules/**/*.js", "${workspaceFolder}/lib/**/*.js"]
     },
     {
       "name": "Babel Node",
@@ -18,7 +27,8 @@
       "protocol": "inspector",
       "env": {
         "BABEL_ENV": "debug"
-      }
+      },
+      "skipFiles": ["${workspaceFolder}/node_modules/**/*.js", "${workspaceFolder}/lib/**/*.js"]
     },
     {
       "name": "Node with Experimental Modules",
@@ -27,7 +37,8 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["--experimental-modules"],
       "program": "${file}",
-      "protocol": "inspector"
+      "protocol": "inspector",
+      "skipFiles": ["${workspaceFolder}/node_modules/**/*.js", "${workspaceFolder}/lib/**/*.js"]
     }
   ],
   "compounds": []
