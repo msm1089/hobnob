@@ -1,7 +1,7 @@
 import assert from 'assert';
 import deepClone from 'lodash.clonedeep';
 import deepEqual from 'lodash.isequal';
-import { spy } from 'sinon';
+import { spy, stub } from 'sinon';
 import errorHandler from './index';
 
 function getValidError(constructor = SyntaxError) {
@@ -91,7 +91,7 @@ describe('errorHandler', function() {
     const res = {
       status: spy(),
       set: spy(),
-      json: spy()
+      json: stub().returns(resJsonReturnValue)
     };
     const next = spy();
     const returnedValue = errorHandler(err, req, res, next);
