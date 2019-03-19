@@ -1,5 +1,5 @@
 function createUser(req, res, db, create, ValidationError) {
-  create(req, db)
+  return create(req, db)
     .then(
       result => {
         res.status(201);
@@ -12,7 +12,7 @@ function createUser(req, res, db, create, ValidationError) {
           res.set('Content-Type', 'application/json');
           return res.json({ message: err.message });
         }
-        return undefined;
+        throw err;
       }
     )
     .catch(() => {
