@@ -10,6 +10,9 @@ import injectHandlerDependencies from './utils/inject-handler-dependencies';
 import ValidationError from './validators/errors/validation-error';
 import createUserHandler from './handlers/users/create';
 import createUserEngine from './engines/users/create';
+import createUserValidator from './validators/users/create';
+
+const handlerToValidatorMap = new Map([[createUserHandler, createUserValidator]]);
 
 const handlerToEngineMap = new Map([[createUserHandler, createUserEngine]]);
 
@@ -34,5 +37,11 @@ app.listen(process.env.SERVER_PORT, () => {
 
 app.post(
   '/users',
-  injectHandlerDependencies(createUserHandler, client, handlerToEngineMap, ValidationError)
+  injectHandlerDependencies(
+    createUserHandler,
+    client,
+    handlerToEngineMap,
+    handlerToValidatorMap,
+    ValidationError
+  )
 );

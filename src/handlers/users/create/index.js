@@ -1,5 +1,5 @@
-function createUser(req, res, db, create, ValidationError) {
-  return create(req, db)
+function createUser(req, res, db, create, validator, ValidationError) {
+  return create(req, db, validator, ValidationError)
     .then(
       result => {
         res.status(201);
