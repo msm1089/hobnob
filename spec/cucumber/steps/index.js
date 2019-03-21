@@ -38,7 +38,7 @@ When(/^attaches a generic (.+) payload$/, function(payloadType) {
   }
 });
 
-When(/^sends the request$/, { timeout: 3 * 1000 }, function(callback) {
+When(/^sends the request$/, { timeout: 5 * 1000 }, function(callback) {
   this.request
     .then(response => {
       this.response = response.res;
