@@ -1,6 +1,20 @@
 {
-    "extends": "airbnb-base",
-	"rules": {
-        "func-names": ["error", "as-needed"]
+  "extends": ["airbnb", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "no-underscore-dangle": 0
+  },
+  "overrides": [
+    {
+      "files": ["*.test.js"],
+      "env": {
+        "mocha": true
+      },
+      "rules": {
+        "func-names": "off",
+        "prefer-arrow-callback": "off"
+      }
     }
+  ]
 }
