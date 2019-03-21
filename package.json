@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && babel src -d dist",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf dist && babel src -d dist --source-maps --copy-files",
     "watch": "nodemon -w src --exec yarn run serve",
     "watch-test": "npx dotenv -e envs/test.env yarn run watch",
     "es-start": "./batchfiles/es-start.bat",
@@ -17,7 +16,17 @@
     "lint": "eslint src",
     "precommit": "yarn run lint",
     "test:e2e": "dotenv -e envs/test.env -e envs/.env ./scripts/e2e.test.sh",
-    "serve": "yarn run build && node dist/index.js"
+    "test:e2e:coverage": "nyc --reporter=html --reporter=text yarn run test:e2e",
+    "test:unit": "mocha \"src/**/*.unit.test.js\" --require @babel/register",
+    "test:unit:coverage": "nyc --reporter=html --reporter=text yarn run test:unit",
+    "test:integration": "dotenv -e envs/test.env -e envs/.env mocha -- \"src/**/*.integration.test.js\" --require @babel/register",
+    "test:integration:coverage": "nyc --reporter=html --reporter=text yarn run test:integration",
+    "test": "yarn run test:e2e && yarn run test:unit && yarn run test:integration",
+    "test:coverage": "nyc --reporter=html --reporter=text yarn run test",
+    "test:serve": "dotenv -e envs/test.env -e envs/.env babel-node src/index.js",
+    "serve": "yarn run build && dotenv -e envs/test.env -e envs/.env node dist/index.js",
+    "debug": "dotenv -e envs/test.env -e envs/.env node --inspect-brk dist/index.js",
+    "compile": "babel src --out-dir dist --source-maps --watch"
   },
   "repository": {
     "type": "git",
@@ -42,14 +51,20 @@
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "7.11.0",
     "husky": "^1.1.2",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.isequal": "^4.5.0",
+    "mocha": "^6.0.2",
     "node-cmd": "^3.0.0",
     "nodemon": "^1.18.5",
+    "nyc": "^13.3.0",
     "prettier": "^1.15.1",
     "rimraf": "^2.6.2",
+    "sinon": "^7.2.6",
     "superagent": "^4.0.0-beta.5"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
+    "ajv": "^6.9.2",
     "body-parser": "^1.18.3",
     "elasticsearch": "^15.2.0",
     "express": "^4.16.4"

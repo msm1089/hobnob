@@ -1,2 +1,2 @@
 @ECHO OFF
-NET START elasticsearch-service-x64 || ECHO ES already running
+NET START Elasticsearch || ECHO ES already running
