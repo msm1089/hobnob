@@ -2,4 +2,4 @@
 //cmd.run('npm run serve');
 
 var exec = require('child_process').exec;
-exec('node dist/index.js', { windowsHide: true });
+exec('babel-node src/index.js', { windowsHide: true });
