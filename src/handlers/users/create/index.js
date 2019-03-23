@@ -1,10 +1,10 @@
 function createUser(req, res, db, create, validator, ValidationError) {
   return create(req, db, validator, ValidationError)
     .then(
-      result => {
+      userId => {
         res.status(201);
         res.set('Content-Type', 'text/plain');
-        return res.send(result._id);
+        return res.send(userId);
       },
       err => {
         if (err instanceof ValidationError) {

@@ -7,7 +7,7 @@ Feature: Create User
   Scenario Outline: Bad Client Requests
 
     If the client sends a POST request to /users with an empty payload, it
-    should receive a response with a 4xx Bad Request HTTP status code.
+    should receive a response with a 4xx HTTP status code.
 
       When the client creates a POST request to /users
         And attaches a generic <payloadType> payload
@@ -72,10 +72,11 @@ Feature: Create User
     When the client creates a POST request to /users
       And attaches a valid Create User payload
       And sends the request
+      And saves the response text in the context under userId
     Then our API should respond with a 201 HTTP status code
       And the payload of the response should be a string
       And the payload object should be added to the database, grouped under the "user" type
-      And the newly-created user should be deleted
+      And the entity of type user, with ID stored under userId, should be deleted
 
   Scenario Outline: Invalid Profile
 
@@ -99,10 +100,11 @@ Feature: Create User
     When the client creates a POST request to /users/
       And attaches <payload> as the payload
       And sends the request
+      And saves the response text in the context under userId
     Then our API should respond with a 201 HTTP status code
       And the payload of the response should be a string
       And the payload object should be added to the database, grouped under the "user" type
-      And the newly-created user should be deleted
+      And the entity of type user, with ID stored under userId, should be deleted
 
     Examples:
 

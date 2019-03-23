@@ -2,6 +2,8 @@ import assert from 'assert';
 import superagent from 'superagent';
 import { When, Then } from 'cucumber';
 import elasticsearch from 'elasticsearch';
+import objectPath from 'object-path';
+
 import { getValidPayload, convertStringToArray } from './utils';
 
 const client = new elasticsearch.Client({
@@ -38,20 +40,22 @@ When(/^attaches a generic (.+) payload$/, function(payloadType) {
   }
 });
 
-When(/^sends the request$/, { timeout: 5 * 1000 }, function(callback) {
-  this.request
+When(/^sends the request$/, { timeout: 3 * 1000 }, function() {
+  return this.request
     .then(response => {
       this.response = response.res;
-      callback();
     })
     .catch(error => {
       this.response = error.response;
-      callback();
     });
 });
 
 Then(/^our API should respond with a ([1-5]\d{2}) HTTP status code$/, function(statusCode) {
   assert.equal(this.response.statusCode, statusCode);
+});
+
+When(/^saves the response text in the context under ([\w.]+)$/, function(contextPath) {
+  objectPath.set(this, contextPath, this.response.text);
 });
 
 Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function(payloadType) {
@@ -140,9 +144,9 @@ When(/^attaches a valid (.+) payload$/, function(payloadType) {
 
 Then(
   /^the payload object should be added to the database, grouped under the "([a-zA-Z]+)" type$/,
-  function(type, callback) {
+  function(type) {
     this.type = type;
-    client
+    return client
       .get({
         index: process.env.ELASTICSEARCH_INDEX,
         type,
@@ -150,24 +154,24 @@ Then(
       })
       .then(result => {
         assert.deepEqual(result._source, this.requestPayload);
-        callback();
-      })
-      .catch(callback);
+      });
   }
 );
 
-Then('the newly-created user should be deleted', function(callback) {
-  client
+Then(/^the entity of type (\w+), with ID stored under ([\w.]+), should be deleted$/, function(
+  type,
+  idPath
+) {
+  return client
     .delete({
       index: process.env.ELASTICSEARCH_INDEX,
-      type: this.type,
-      id: this.responsePayload
+      type,
+      id: objectPath.get(this, idPath),
+      refresh: 'true'
     })
-    .then(function(res) {
+    .then(res => {
       assert.equal(res.result, 'deleted');
-      callback();
-    })
-    .catch(callback);
+    });
 });
 
 When(/^attaches (.+) as the payload$/, function(payload) {
