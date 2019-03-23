@@ -1,5 +1,8 @@
 {
   "extends": ["airbnb", "prettier"],
+  "settings": {
+    "import/core-modules": ["sinon"]
+  },
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": ["error"],
@@ -13,7 +16,13 @@
       },
       "rules": {
         "func-names": "off",
-        "prefer-arrow-callback": "off"
+        "prefer-arrow-callback": "off",
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": true
+          }
+        ]
       }
     }
   ]
