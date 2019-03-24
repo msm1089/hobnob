@@ -4,7 +4,7 @@ import { When, Then } from 'cucumber';
 import elasticsearch from 'elasticsearch';
 import objectPath from 'object-path';
 
-import { getValidPayload, convertStringToArray } from './utils';
+import { getValidPayload, convertStringToArray, processPath } from './utils';
 
 const client = new elasticsearch.Client({
   host: `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${
@@ -15,9 +15,10 @@ const client = new elasticsearch.Client({
 When(
   /^the client creates a (GET|POST|PATCH|PUT|DELETE|OPTIONS|HEAD) request to ([/\w-:.]+)$/,
   function(method, path) {
+    const processedPath = processPath(this, path);
     this.request = superagent(
       method,
-      `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}${path}`
+      `${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}${processedPath}`
     );
   }
 );
@@ -157,6 +158,16 @@ Then(
       });
   }
 );
+
+Then(/^the ([\w.]+) property of the response should be the same as context\.([\w.]+)$/, function(
+  responseProperty,
+  contextProperty
+) {
+  assert.deepEqual(
+    objectPath.get(this.responsePayload, responseProperty === 'root' ? '' : responseProperty),
+    objectPath.get(this, contextProperty)
+  );
+});
 
 Then(/^the entity of type (\w+), with ID stored under ([\w.]+), should be deleted$/, function(
   type,
