@@ -8,13 +8,23 @@ import checkContentTypeIsJson from './middlewares/check-content-type-is-json';
 import errorHandler from './middlewares/error-handler';
 import injectHandlerDependencies from './utils/inject-handler-dependencies';
 import ValidationError from './validators/errors/validation-error';
+
+// Handlers
 import createUserHandler from './handlers/users/create';
+import retrieveUserHandler from './handlers/users/retrieve';
+
+// Engines
 import createUserEngine from './engines/users/create';
+import retrieveUserEngine from './engines/users/retrieve';
+
 import createUserValidator from './validators/users/create';
 
 const handlerToValidatorMap = new Map([[createUserHandler, createUserValidator]]);
 
-const handlerToEngineMap = new Map([[createUserHandler, createUserEngine]]);
+const handlerToEngineMap = new Map([
+  [createUserHandler, createUserEngine],
+  [retrieveUserHandler, retrieveUserEngine]
+]);
 
 const app = express();
 
@@ -44,6 +54,17 @@ app.post(
   '/users',
   injectHandlerDependencies(
     createUserHandler,
+    client,
+    handlerToEngineMap,
+    handlerToValidatorMap,
+    ValidationError
+  )
+);
+
+app.get(
+  '/users/:userId',
+  injectHandlerDependencies(
+    retrieveUserHandler,
     client,
     handlerToEngineMap,
     handlerToValidatorMap,

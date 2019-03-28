@@ -1,24 +1,19 @@
 import assert from 'assert';
-import { stub } from 'sinon';
 import generateResSpy from '../../../tests/spies/res';
+import generateCreateStubs, {
+  CREATE_USER_RESPONSE
+} from '../../../tests/stubs/engines/users/create';
 import ValidationError from '../../../validators/errors/validation-error';
-import createUser from '.';
+import create from '.';
 
 const VALIDATION_ERROR_MESSAGE = 'VALIDATION_ERROR_MESSAGE';
-const USER_ID = 'USER_ID';
-
-const generateCreateStubs = {
-  success: () => stub().resolves(USER_ID),
-  genericError: () => stub().rejects(new Error()),
-  validationError: () => stub().rejects(new ValidationError(VALIDATION_ERROR_MESSAGE))
-};
 
 describe('createUser', function() {
   const db = {};
   const req = {};
 
   let res;
-  let create;
+  let engine;
   let validator;
 
   beforeEach(function() {
@@ -26,23 +21,23 @@ describe('createUser', function() {
   });
   describe('When invoked', function() {
     beforeEach(function() {
-      create = generateCreateStubs.success();
+      engine = generateCreateStubs().success;
       validator = {};
-      return createUser(req, res, db, create, validator, ValidationError);
+      return create(req, res, db, engine, validator, ValidationError);
     });
     describe('should call the create engine function', function() {
       it('once', function() {
-        assert(create.calledOnce);
+        assert(engine.calledOnce);
       });
       it('with req, db', function() {
-        assert(create.calledWithExactly(req, db, validator, ValidationError));
+        assert(engine.calledWithExactly(req, db, validator, ValidationError));
       });
     });
   });
   describe("When create resolves with the new user's ID", function() {
     beforeEach(function() {
-      create = generateCreateStubs.success();
-      return createUser(req, res, db, create, validator, ValidationError);
+      engine = generateCreateStubs().success;
+      return create(req, res, db, engine, validator, ValidationError);
     });
     describe('should call res.status()', function() {
       it('once', function() {
@@ -67,14 +62,14 @@ describe('createUser', function() {
         assert(res.send.calledOnce);
       });
       it("with the new user's ID", function() {
-        assert(res.send.calledWithExactly(USER_ID));
+        assert(res.send.calledWithExactly(CREATE_USER_RESPONSE));
       });
     });
   });
   describe('When create rejects with an instance of ValidationError', function() {
     beforeEach(function() {
-      create = generateCreateStubs.validationError();
-      return createUser(req, res, db, create, validator, ValidationError);
+      engine = generateCreateStubs().validationError;
+      return create(req, res, db, engine, validator, ValidationError);
     });
     describe('should call res.status()', function() {
       it('once', function() {
@@ -103,11 +98,10 @@ describe('createUser', function() {
       });
     });
   });
-
   describe('When create rejects with an instance of Error', function() {
     beforeEach(function() {
-      create = generateCreateStubs.genericError();
-      return createUser(req, res, db, create, validator, ValidationError);
+      engine = generateCreateStubs().genericError;
+      return create(req, res, db, engine, validator, ValidationError);
     });
     describe('should call res.status()', function() {
       it('once', function() {
