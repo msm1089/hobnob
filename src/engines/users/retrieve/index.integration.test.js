@@ -20,14 +20,14 @@ describe('Engine - User - Retrieve', function() {
     }
   };
   let promise;
-  beforeEach(function() {
-    promise = retrieve(req, db);
-  });
-  describe('When invoked with non-existing userID', function() {
-    it('should return with a promise that rejects with an Error object', function() {
-      return promise.catch(err => err instanceof Error);
+  describe('When the user does not exists', function() {
+    beforeEach(function() {
+      promise = retrieve(req, db);
     });
-    it('that has the message "Not Found"', function() {
+    it('should return with a promise that rejects with an Error object', function() {
+      return promise.catch(err => assert(err instanceof Error));
+    });
+    it("that has the mesage 'Not Found'", function() {
       return promise.catch(err => assert.equal(err.message, 'Not Found'));
     });
   });
