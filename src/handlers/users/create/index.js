@@ -1,5 +1,5 @@
-function createUser(req, res, db, create, validator, ValidationError) {
-  return create(req, db, validator, ValidationError)
+function create(req, res, db, engine, validator, ValidationError) {
+  return engine(req, db, validator, ValidationError)
     .then(
       userId => {
         res.status(201);
@@ -22,4 +22,4 @@ function createUser(req, res, db, create, validator, ValidationError) {
     });
 }
 
-export default createUser;
+export default create;

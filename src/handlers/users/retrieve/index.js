@@ -1,5 +1,5 @@
-function retrieveUser(req, res, db, retrieve) {
-  return retrieve(req, db)
+function retrieve(req, res, db, engine) {
+  return engine(req, db)
     .then(result => {
       res.status(200);
       res.set('Content-Type', 'application/json');
@@ -17,4 +17,4 @@ function retrieveUser(req, res, db, retrieve) {
     });
 }
 
-export default retrieveUser;
+export default retrieve;
