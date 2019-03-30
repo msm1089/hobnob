@@ -12,10 +12,12 @@ import ValidationError from './validators/errors/validation-error';
 // Handlers
 import createUserHandler from './handlers/users/create';
 import retrieveUserHandler from './handlers/users/retrieve';
+import deleteUserHandler from './handlers/users/delete';
 
 // Engines
 import createUserEngine from './engines/users/create';
 import retrieveUserEngine from './engines/users/retrieve';
+import deleteUserEngine from './engines/users/delete';
 
 import createUserValidator from './validators/users/create';
 
@@ -23,7 +25,8 @@ const handlerToValidatorMap = new Map([[createUserHandler, createUserValidator]]
 
 const handlerToEngineMap = new Map([
   [createUserHandler, createUserEngine],
-  [retrieveUserHandler, retrieveUserEngine]
+  [retrieveUserHandler, retrieveUserEngine],
+  [deleteUserHandler, deleteUserEngine]
 ]);
 
 const app = express();
@@ -65,6 +68,17 @@ app.get(
   '/users/:userId',
   injectHandlerDependencies(
     retrieveUserHandler,
+    client,
+    handlerToEngineMap,
+    handlerToValidatorMap,
+    ValidationError
+  )
+);
+
+app.delete(
+  '/users/:userId',
+  injectHandlerDependencies(
+    deleteUserHandler,
     client,
     handlerToEngineMap,
     handlerToValidatorMap,
