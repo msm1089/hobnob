@@ -96,23 +96,27 @@ When(/^without a (?:"|')([\w-]+)(?:"|') header set$/, function(headerName) {
   this.request.unset(headerName);
 });
 
-When(/^attaches an? (.+) payload which is missing the ([a-zA-Z0-9, ]+) fields?$/, function(
+When(/^attaches an? (.+) payload which is missing the ([a-zA-Z0-9., ]+) fields?$/, function(
   payloadType,
   missingFields
 ) {
-  this.requestPayload = getValidPayload(payloadType);
+  this.requestPayload = getValidPayload(payloadType, this);
   const fieldsToDelete = convertStringToArray(missingFields);
   fieldsToDelete.forEach(field => delete this.requestPayload[field]);
   this.request.send(JSON.stringify(this.requestPayload)).set('Content-Type', 'application/json');
 });
 
 When(
-  /^attaches an? (.+) payload where the ([a-zA-Z0-9, ]+) fields? (?:is|are)(\s+not)? a ([a-zA-Z]+)$/,
+  /^attaches an? (.+) payload where the ([a-zA-Z0-9., ]+) fields? (?:is|are)(\s+not)? a ([a-zA-Z]+)$/,
   function(payloadType, fields, invert, type) {
-    this.requestPayload = getValidPayload(payloadType);
+    this.requestPayload = getValidPayload(payloadType, this);
     const typeKey = type.toLowerCase();
     const invertKey = invert ? 'not' : 'is';
     const sampleValues = {
+      object: {
+        is: {},
+        not: 'string'
+      },
       string: {
         is: 'string',
         not: 10
@@ -120,7 +124,7 @@ When(
     };
     const fieldsToModify = convertStringToArray(fields);
     fieldsToModify.forEach(field => {
-      this.requestPayload[field] = sampleValues[typeKey][invertKey];
+      objectPath.set(this.requestPayload, field, sampleValues[typeKey][invertKey]);
     });
     this.request.send(JSON.stringify(this.requestPayload)).set('Content-Type', 'application/json');
   }
@@ -129,7 +133,7 @@ When(
 When(
   /^attaches an? (.+) payload where the ([a-zA-Z0-9, ]+) fields? (?:is|are) exactly (.+)$/,
   function(payloadType, fields, value) {
-    this.requestPayload = getValidPayload(payloadType);
+    this.requestPayload = getValidPayload(payloadType, this);
     const fieldsToModify = convertStringToArray(fields);
     fieldsToModify.forEach(field => {
       this.requestPayload[field] = value;
@@ -139,7 +143,7 @@ When(
 );
 
 When(/^attaches a valid (.+) payload$/, function(payloadType) {
-  this.requestPayload = getValidPayload(payloadType);
+  this.requestPayload = getValidPayload(payloadType, this);
   this.request.send(JSON.stringify(this.requestPayload)).set('Content-Type', 'application/json');
 });
 
@@ -188,4 +192,35 @@ Then(/^the entity of type (\w+), with ID stored under ([\w.]+), should be delete
 When(/^attaches (.+) as the payload$/, function(payload) {
   this.requestPayload = JSON.parse(payload);
   this.request.send(payload).set('Content-Type', 'application/json');
+});
+
+Then(/^the ([\w.]+) property of the response should be an? ([\w.]+) with the value (.+)$/, function(
+  responseProperty,
+  expectedResponseType,
+  expectedResponse
+) {
+  const parsedExpectedResponse = (function() {
+    switch (expectedResponseType) {
+      case 'object':
+        return JSON.parse(expectedResponse);
+      case 'string':
+        return expectedResponse.replace(/^(?:["'])(.*)(?:["'])$/, '$1');
+      default:
+        return expectedResponse;
+    }
+  })();
+  assert.deepEqual(
+    objectPath.get(this.responsePayload, responseProperty === 'root' ? '' : responseProperty),
+    parsedExpectedResponse
+  );
+});
+
+When(/^attaches an? (.+) payload which has the additional ([a-zA-Z0-9, ]+) fields?$/, function(
+  payloadType,
+  additionalFields
+) {
+  this.requestPayload = getValidPayload(payloadType, this);
+  const fieldsToAdd = convertStringToArray(additionalFields);
+  fieldsToAdd.forEach(field => objectPath.set(this.requestPayload, field, 'foo'));
+  this.request.send(JSON.stringify(this.requestPayload)).set('Content-Type', 'application/json');
 });
