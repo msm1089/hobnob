@@ -2,56 +2,54 @@ import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
+
 import checkEmptyPayload from './middlewares/check-empty-payload';
 import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
 import checkContentTypeIsJson from './middlewares/check-content-type-is-json';
 import errorHandler from './middlewares/error-handler';
+
 import injectHandlerDependencies from './utils/inject-handler-dependencies';
 import ValidationError from './validators/errors/validation-error';
+
+// Validators
+import createUserValidator from './validators/users/create';
+import replaceProfileValidator from './validators/profile/replace';
 
 // Handlers
 import createUserHandler from './handlers/users/create';
 import retrieveUserHandler from './handlers/users/retrieve';
 import deleteUserHandler from './handlers/users/delete';
+import replaceProfileHandler from './handlers/profile/replace';
 
 // Engines
 import createUserEngine from './engines/users/create';
 import retrieveUserEngine from './engines/users/retrieve';
 import deleteUserEngine from './engines/users/delete';
-
-import createUserValidator from './validators/users/create';
-
-const handlerToValidatorMap = new Map([[createUserHandler, createUserValidator]]);
+import replaceProfileEngine from './engines/profile/replace';
 
 const handlerToEngineMap = new Map([
   [createUserHandler, createUserEngine],
   [retrieveUserHandler, retrieveUserEngine],
-  [deleteUserHandler, deleteUserEngine]
+  [deleteUserHandler, deleteUserEngine],
+  [replaceProfileHandler, replaceProfileEngine]
 ]);
 
-const app = express();
+const handlerToValidatorMap = new Map([
+  [createUserHandler, createUserValidator],
+  [replaceProfileHandler, replaceProfileValidator]
+]);
 
 const client = new elasticsearch.Client({
   host: `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${
     process.env.ELASTICSEARCH_PORT
   }`
 });
+const app = express();
 
 app.use(checkEmptyPayload);
 app.use(checkContentTypeIsSet);
 app.use(checkContentTypeIsJson);
 app.use(bodyParser.json({ limit: 1e6 }));
-app.use(errorHandler);
-
-app.listen(process.env.SERVER_PORT, async () => {
-  const indexParams = { index: process.env.ELASTICSEARCH_INDEX };
-  const indexExists = await client.indices.exists(indexParams);
-  if (!indexExists) {
-    await client.indices.create(indexParams);
-  }
-  // eslint-disable-next-line no-console
-  console.log(`Hobnob API server listening on port ${process.env.SERVER_PORT}!`);
-});
 
 app.post(
   '/users',
@@ -63,7 +61,6 @@ app.post(
     ValidationError
   )
 );
-
 app.get(
   '/users/:userId',
   injectHandlerDependencies(
@@ -74,7 +71,6 @@ app.get(
     ValidationError
   )
 );
-
 app.delete(
   '/users/:userId',
   injectHandlerDependencies(
@@ -85,3 +81,25 @@ app.delete(
     ValidationError
   )
 );
+app.put(
+  '/users/:userId/profile',
+  injectHandlerDependencies(
+    replaceProfileHandler,
+    client,
+    handlerToEngineMap,
+    handlerToValidatorMap,
+    ValidationError
+  )
+);
+
+app.use(errorHandler);
+
+app.listen(process.env.SERVER_PORT, async () => {
+  const indexParams = { index: process.env.ELASTICSEARCH_INDEX };
+  const indexExists = await client.indices.exists(indexParams);
+  if (!indexExists) {
+    await client.indices.create(indexParams);
+  }
+  // eslint-disable-next-line no-console
+  console.log(`Hobnob API server listening on port ${process.env.SERVER_PORT}!`);
+});
