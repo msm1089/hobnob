@@ -11,6 +11,7 @@ describe('Engine - User - Create', function() {
   let req;
   let db;
   let validator;
+  let promise;
 
   beforeEach(function() {
     req = {};
@@ -18,8 +19,7 @@ describe('Engine - User - Create', function() {
       index: generateESClientIndexStub.success()
     };
   });
-  describe('When invoked and validator returns with undefined', function() {
-    let promise;
+  describe('When invoked', function() {
     beforeEach(function() {
       validator = stub().returns(undefined);
       promise = create(req, db, validator, ValidationError);
@@ -32,6 +32,14 @@ describe('Engine - User - Create', function() {
       it('with req as the only argument', function() {
         assert(validator.calledWithExactly(req));
       });
+    });
+  });
+
+  describe('When the validator returns with true', () => {
+    beforeEach(() => {
+      validator = stub().returns(true);
+      promise = create(req, db, validator, ValidationError);
+      return promise;
     });
     it('should resolve with the _id property extracted from the result of db.index()', function() {
       return promise.then(res => assert.strictEqual(res, INDEX_RESOLVE_ID));

@@ -12,7 +12,7 @@ const generate = () => ({
 
 export {
   generate as default,
+  CREATE_USER_RESPONSE,
   VALIDATION_ERROR_MESSAGE,
-  GENERIC_ERROR_MESSAGE,
-  CREATE_USER_RESPONSE
+  GENERIC_ERROR_MESSAGE
 };
