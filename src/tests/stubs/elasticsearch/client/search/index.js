@@ -1,6 +1,6 @@
 import { stub } from 'sinon';
 
-const SEARCH_RESOLVE_OBJ = {
+const ES_SEARCH_RESULTS = {
   took: 0,
   timed_out: false,
   _shards: {
@@ -51,11 +51,11 @@ const SEARCH_REJECT_ERROR = new Error();
 
 const generate = {
   success() {
-    return stub().returns(Promise.resolve(SEARCH_RESOLVE_OBJ));
+    return stub().returns(Promise.resolve(ES_SEARCH_RESULTS));
   },
   failure() {
     return stub().returns(Promise.reject(SEARCH_REJECT_ERROR));
   }
 };
 
-export { generate as default, SEARCH_RESOLVE_OBJ };
+export { generate as default, ES_SEARCH_RESULTS };
