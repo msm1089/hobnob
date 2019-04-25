@@ -1,13 +1,25 @@
 import assert from 'assert';
 import elasticsearch from 'elasticsearch';
 import ValidationError from '../../../validators/errors/validation-error';
-import validator from '../../../validators/profile/replace';
-import replace from '.';
+import validator from '../../../validators/profile/update';
+import update from '.';
 
 const USER_ID = 'TEST_USER_ID';
-const USER_OBJ = {
+const ORIGINAL_USER_OBJ = {
   email: 'e@ma.il',
-  password: 'hunter2'
+  password: 'hunter2',
+  profile: {
+    summary: 'test',
+    bio: 'test'
+  }
+};
+const NEW_USER_OBJ = {
+  email: 'e@ma.il',
+  password: 'hunter2',
+  profile: {
+    summary: 'summary',
+    bio: 'test'
+  }
 };
 const db = new elasticsearch.Client({
   host: `${process.env.ELASTICSEARCH_PROTOCOL}://${process.env.ELASTICSEARCH_HOSTNAME}:${
@@ -15,13 +27,13 @@ const db = new elasticsearch.Client({
   }`
 });
 
-describe('Engine - Profile - Replace', function() {
+describe('Engine - Profile - Update', function() {
   let req;
   let promise;
   describe('When the request is not valid', function() {
     beforeEach(function() {
       req = {};
-      return replace(req, db, validator, ValidationError).catch(err =>
+      return update(req, db, validator, ValidationError).catch(err =>
         assert(err instanceof ValidationError)
       );
     });
@@ -39,7 +51,7 @@ describe('Engine - Profile - Replace', function() {
     });
     describe('When the user does not exists', function() {
       beforeEach(function() {
-        promise = replace(req, db, validator, ValidationError);
+        promise = update(req, db, validator, ValidationError);
       });
       it('should return with a promise that rejects with an Error object', function() {
         return promise.catch(err => assert(err instanceof Error));
@@ -56,10 +68,10 @@ describe('Engine - Profile - Replace', function() {
             index: process.env.ELASTICSEARCH_INDEX,
             type: 'user',
             id: USER_ID,
-            body: USER_OBJ,
+            body: ORIGINAL_USER_OBJ,
             refresh: true
           })
-          .then(() => replace(req, db, validator, ValidationError));
+          .then(() => update(req, db, validator, ValidationError));
         return promise;
       });
       afterEach(function() {
@@ -84,14 +96,7 @@ describe('Engine - Profile - Replace', function() {
               id: USER_ID
             })
             .then(user => user._source)
-            .then(user =>
-              assert.deepEqual(user, {
-                profile: {
-                  summary: 'summary'
-                },
-                ...USER_OBJ
-              })
-            );
+            .then(user => assert.deepEqual(user, NEW_USER_OBJ));
         });
       });
     });
