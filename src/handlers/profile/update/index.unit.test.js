@@ -1,13 +1,13 @@
 import assert from 'assert';
 import { match } from 'sinon';
 import generateResSpy from '../../../tests/spies/res';
-import generateReplaceProfileStubs, {
-  VALIDATION_ERROR_MESSAGE as REPLACE_PROFILE_VALIDATION_ERROR_MESSAGE
-} from '../../../tests/stubs/engines/profile/replace';
+import generateUpdateProfileStubs, {
+  VALIDATION_ERROR_MESSAGE as UPDATE_PROFILE_VALIDATION_ERROR_MESSAGE
+} from '../../../tests/stubs/engines/profile/update';
 import ValidationError from '../../../validators/errors/validation-error';
-import replace from '.';
+import update from '.';
 
-describe('Handler - Profile - Replace', function() {
+describe('Handler - Profile - Update', function() {
   const db = {};
   const req = {};
 
@@ -18,35 +18,37 @@ describe('Handler - Profile - Replace', function() {
     res = generateResSpy();
   });
 
-  describe('When called with valid request object', () => {
-    beforeEach(() => {
-      engine = generateReplaceProfileStubs().success;
-      return replace(req, res, db, engine, validator, ValidationError);
+  describe('When called with valid request object', function() {
+    beforeEach(function() {
+      engine = generateUpdateProfileStubs().success;
+      return update(req, res, db, engine, validator, ValidationError);
     });
 
-    it('should call res.status() once', () => {
+    it('should call res.status() once', function() {
       assert(res.status.calledOnce);
     });
-    it('should call res.status() with 200', () => {
+    it('should call res.status() with 200', function() {
       assert(res.status.calledWithExactly(200));
     });
-    it('should res.set() once', () => {
+    it('should res.set() once', function() {
       assert(res.set.calledOnce);
     });
-    it('should res.set() with a text/plain content-type header', () => {
+    it('should res.set() with a text/plain content-type header', function() {
       assert(res.set.calledWithExactly('Content-Type', 'text/plain'));
     });
-    it('should call res.send() once', () => {
-      assert(res.set.calledOnce);
-    });
-    it('should res.send() with zero arguments', () => {
-      assert(res.send.calledWithExactly());
+    describe('should call res.send()', function() {
+      it('once', function() {
+        assert(res.send.calledOnce);
+      });
+      it('with no arguments', function() {
+        assert(res.send.calledWithExactly());
+      });
     });
   });
   describe('When called with an invalid request object', function() {
     beforeEach(function() {
-      engine = generateReplaceProfileStubs().validationError;
-      return replace(req, res, db, engine, validator, ValidationError);
+      engine = generateUpdateProfileStubs().validationError;
+      return update(req, res, db, engine, validator, ValidationError);
     });
     describe('should call res.status()', function() {
       it('once', function() {
@@ -72,16 +74,16 @@ describe('Handler - Profile - Replace', function() {
       });
       it('with a validation error object', function() {
         assert(
-          res.json.calledWithExactly(match.has('message', REPLACE_PROFILE_VALIDATION_ERROR_MESSAGE))
+          res.json.calledWithExactly(match.has('message', UPDATE_PROFILE_VALIDATION_ERROR_MESSAGE))
         );
       });
     });
   });
 
-  describe('When replaceProfile throws a User Not Found error', function() {
+  describe('When updateProfile throws a User Not Found error', function() {
     beforeEach(function() {
-      engine = generateReplaceProfileStubs().notFoundError;
-      return replace(req, res, db, engine, validator, ValidationError);
+      engine = generateUpdateProfileStubs().notFoundError;
+      return update(req, res, db, engine, validator, ValidationError);
     });
 
     it('should call res.status() once', function() {
@@ -105,10 +107,10 @@ describe('Handler - Profile - Replace', function() {
       assert(res.json.calledWithExactly(match.has('message', 'Not Found')));
     });
   });
-  describe('When replaceProfile throws an unexpected error', function() {
+  describe('When updateProfile throws an unexpected error', function() {
     beforeEach(function() {
-      engine = generateReplaceProfileStubs().genericError;
-      return replace(req, res, db, engine, validator, ValidationError);
+      engine = generateUpdateProfileStubs().genericError;
+      return update(req, res, db, engine, validator, ValidationError);
     });
     it('should call res.status() once', function() {
       assert(res.status.calledOnce);
