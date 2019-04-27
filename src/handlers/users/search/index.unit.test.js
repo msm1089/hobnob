@@ -1,13 +1,13 @@
 import assert from 'assert';
 import generateResSpy from '../../../tests/spies/res';
-import generateCreateStubs, {
-  CREATE_USER_RESPONSE,
+import generateSearchStubs, {
+  SEARCH_USER_RESPONSE_OBJECT,
   VALIDATION_ERROR_MESSAGE
-} from '../../../tests/stubs/engines/users/create';
+} from '../../../tests/stubs/engines/users/search';
 import ValidationError from '../../../validators/errors/validation-error';
-import create from '.';
+import search from '.';
 
-describe('Handler - Users - Create', function() {
+describe('Handler - Users - Search', function() {
   const db = {};
   const req = {};
 
@@ -20,9 +20,9 @@ describe('Handler - Users - Create', function() {
   });
   describe('When invoked', function() {
     beforeEach(function() {
-      engine = generateCreateStubs().success;
+      engine = generateSearchStubs().success;
       validator = {};
-      return create(req, res, db, engine, validator, ValidationError);
+      return search(req, res, db, engine, validator, ValidationError);
     });
     describe('should call the create engine function', function() {
       it('once', function() {
@@ -33,17 +33,17 @@ describe('Handler - Users - Create', function() {
       });
     });
   });
-  describe("When create resolves with the new user's ID", function() {
+  describe('When create resolves with the search results', function() {
     beforeEach(function() {
-      engine = generateCreateStubs().success;
-      return create(req, res, db, engine, validator, ValidationError);
+      engine = generateSearchStubs().success;
+      return search(req, res, db, engine, validator, ValidationError);
     });
     describe('should call res.status()', function() {
       it('once', function() {
         assert(res.status.calledOnce);
       });
-      it('with the argument 201', function() {
-        assert(res.status.calledWithExactly(201));
+      it('with the argument 200', function() {
+        assert(res.status.calledWithExactly(200));
       });
     });
 
@@ -51,25 +51,24 @@ describe('Handler - Users - Create', function() {
       it('once', function() {
         assert(res.set.calledOnce);
       });
-      it('with the arguments "Content-Type" and "text/plain"', function() {
-        assert(res.set.calledWithExactly('Content-Type', 'text/plain'));
+      it('with the arguments "Content-Type" and "application/json"', function() {
+        assert(res.set.calledWithExactly('Content-Type', 'application/json'));
       });
     });
 
     describe('should call res.send()', function() {
       it('once', function() {
-        assert(res.send.calledOnce);
+        assert(res.json.calledOnce);
       });
-      it("with the new user's ID", function() {
-        assert(res.send.calledWithExactly(CREATE_USER_RESPONSE));
+      it('with the search results', function() {
+        assert(res.json.calledWithExactly(SEARCH_USER_RESPONSE_OBJECT));
       });
     });
   });
-
   describe('When create rejects with an instance of ValidationError', function() {
     beforeEach(function() {
-      engine = generateCreateStubs().validationError;
-      return create(req, res, db, engine, validator, ValidationError);
+      engine = generateSearchStubs().validationError;
+      return search(req, res, db, engine, validator, ValidationError);
     });
     describe('should call res.status()', function() {
       it('once', function() {
@@ -100,8 +99,8 @@ describe('Handler - Users - Create', function() {
   });
   describe('When create rejects with an instance of Error', function() {
     beforeEach(function() {
-      engine = generateCreateStubs().genericError;
-      return create(req, res, db, engine, validator, ValidationError);
+      engine = generateSearchStubs().genericError;
+      return search(req, res, db, engine, validator, ValidationError);
     });
     describe('should call res.status()', function() {
       it('once', function() {
