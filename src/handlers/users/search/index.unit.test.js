@@ -1,98 +1,132 @@
 import assert from 'assert';
-import { match } from 'sinon';
 import generateResSpy from '../../../tests/spies/res';
-import generateRetrieveUserStubs, {
-  RETRIEVE_USER_RESPONSE_OBJECT
-} from '../../../tests/stubs/engines/users/retrieve';
-import retrieve from '.';
+import generateSearchStubs, {
+  SEARCH_USER_RESPONSE_OBJECT,
+  VALIDATION_ERROR_MESSAGE
+} from '../../../tests/stubs/engines/users/search';
+import ValidationError from '../../../validators/errors/validation-error';
+import search from '.';
 
-describe('Handler - Users - Retrieve', function() {
+describe('Handler - Users - Search', function() {
   const db = {};
   const req = {};
+
   let res;
   let engine;
+  let validator;
+
   beforeEach(function() {
     res = generateResSpy();
   });
-  describe('When called with valid request object', function() {
+  describe('When invoked', function() {
     beforeEach(function() {
-      engine = generateRetrieveUserStubs().success;
-      return retrieve(req, res, db, engine);
+      engine = generateSearchStubs().success;
+      validator = {};
+      return search(req, res, db, engine, validator, ValidationError);
     });
-
-    it('should call res.status() once', function() {
-      assert(res.status.calledOnce);
-    });
-    it('should call res.status() with 200', function() {
-      assert(res.status.calledWithExactly(200));
-    });
-
-    it('should res.set() once', function() {
-      assert(res.set.calledOnce);
-    });
-    it('should res.set() with a application/json content-type header', function() {
-      assert(res.set.calledWithExactly('Content-Type', 'application/json'));
-    });
-
-    it('should call res.send() once', function() {
-      assert(res.send.calledOnce);
-    });
-    it('should call res.send() with the object returned from retrieveUser', function() {
-      assert(res.send.calledWithExactly(RETRIEVE_USER_RESPONSE_OBJECT));
+    describe('should call the create engine function', function() {
+      it('once', function() {
+        assert(engine.calledOnce);
+      });
+      it('with req, db', function() {
+        assert(engine.calledWithExactly(req, db, validator, ValidationError));
+      });
     });
   });
-  describe('When the user cannot be found', function() {
+  describe('When create resolves with the search results', function() {
     beforeEach(function() {
-      engine = generateRetrieveUserStubs().notFoundError;
-      return retrieve(req, res, db, engine);
+      engine = generateSearchStubs().success;
+      return search(req, res, db, engine, validator, ValidationError);
+    });
+    describe('should call res.status()', function() {
+      it('once', function() {
+        assert(res.status.calledOnce);
+      });
+      it('with the argument 200', function() {
+        assert(res.status.calledWithExactly(200));
+      });
     });
 
-    it('should call res.status() once', function() {
-      assert(res.status.calledOnce);
-    });
-    it('should call res.status() with 404', function() {
-      assert(res.status.calledWithExactly(404));
-    });
-
-    it('should res.set() once', function() {
-      assert(res.set.calledOnce);
-    });
-    it('should res.set() with a application/json content-type header', function() {
-      assert(res.set.calledWithExactly('Content-Type', 'application/json'));
+    describe('should call res.set()', function() {
+      it('once', function() {
+        assert(res.set.calledOnce);
+      });
+      it('with the arguments "Content-Type" and "application/json"', function() {
+        assert(res.set.calledWithExactly('Content-Type', 'application/json'));
+      });
     });
 
-    it('should call res.json() once', function() {
-      assert(res.json.calledOnce);
-    });
-    it('should call res.json() with an error object with message "Not Found"', function() {
-      assert(res.json.calledWithExactly(match.has('message', 'Not Found')));
+    describe('should call res.send()', function() {
+      it('once', function() {
+        assert(res.json.calledOnce);
+      });
+      it('with the search results', function() {
+        assert(res.json.calledWithExactly(SEARCH_USER_RESPONSE_OBJECT));
+      });
     });
   });
-  describe('When retrieveUser throws an unexpected error', function() {
+  describe('When create rejects with an instance of ValidationError', function() {
     beforeEach(function() {
-      engine = generateRetrieveUserStubs().genericError;
-      return retrieve(req, res, db, engine);
+      engine = generateSearchStubs().validationError;
+      return search(req, res, db, engine, validator, ValidationError);
+    });
+    describe('should call res.status()', function() {
+      it('once', function() {
+        assert(res.status.calledOnce);
+      });
+      it('with the argument 400', function() {
+        assert(res.status.calledWithExactly(400));
+      });
     });
 
-    it('should call res.status() once', function() {
-      assert(res.status.calledOnce);
-    });
-    it('should call res.status() with 500', function() {
-      assert(res.status.calledWithExactly(500));
-    });
-
-    it('should res.set() once', function() {
-      assert(res.set.calledOnce);
-    });
-    it('should res.set() with a application/json content-type header', function() {
-      assert(res.set.calledWithExactly('Content-Type', 'application/json'));
+    describe('should call res.set()', function() {
+      it('once', function() {
+        assert(res.set.calledOnce);
+      });
+      it('with the arguments "Content-Type" and "application/json"', function() {
+        assert(res.set.calledWithExactly('Content-Type', 'application/json'));
+      });
     });
 
-    it('should call res.json() once', function() {
-      assert(res.json.calledOnce);
+    describe('should call res.json()', function() {
+      it('once', function() {
+        assert(res.json.calledOnce);
+      });
+      it('with a validation error object', function() {
+        assert(res.json.calledWithExactly({ message: VALIDATION_ERROR_MESSAGE }));
+      });
     });
-    it('should call res.json() with an error object with message "Internal Server Error"', function() {
-      assert(res.json.calledWithExactly(match.has('message', 'Internal Server Error')));
+  });
+  describe('When create rejects with an instance of Error', function() {
+    beforeEach(function() {
+      engine = generateSearchStubs().genericError;
+      return search(req, res, db, engine, validator, ValidationError);
+    });
+    describe('should call res.status()', function() {
+      it('once', function() {
+        assert(res.status.calledOnce);
+      });
+      it('with the argument 500', function() {
+        assert(res.status.calledWithExactly(500));
+      });
+    });
+
+    describe('should call res.set()', function() {
+      it('once', function() {
+        assert(res.set.calledOnce);
+      });
+      it('with the arguments "Content-Type" and "application/json"', function() {
+        assert(res.set.calledWithExactly('Content-Type', 'application/json'));
+      });
+    });
+
+    describe('should call res.json()', function() {
+      it('once', function() {
+        assert(res.json.calledOnce);
+      });
+      it('with a validation error object', function() {
+        assert(res.json.calledWithExactly({ message: 'Internal Server Error' }));
+      });
     });
   });
 });

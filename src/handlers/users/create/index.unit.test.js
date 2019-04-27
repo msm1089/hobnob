@@ -1,14 +1,13 @@
 import assert from 'assert';
 import generateResSpy from '../../../tests/spies/res';
 import generateCreateStubs, {
-  CREATE_USER_RESPONSE
+  CREATE_USER_RESPONSE,
+  VALIDATION_ERROR_MESSAGE
 } from '../../../tests/stubs/engines/users/create';
 import ValidationError from '../../../validators/errors/validation-error';
 import create from '.';
 
-const VALIDATION_ERROR_MESSAGE = 'VALIDATION_ERROR_MESSAGE';
-
-describe('createUser', function() {
+describe('Handler - Users - Create', function() {
   const db = {};
   const req = {};
 
@@ -66,6 +65,7 @@ describe('createUser', function() {
       });
     });
   });
+
   describe('When create rejects with an instance of ValidationError', function() {
     beforeEach(function() {
       engine = generateCreateStubs().validationError;

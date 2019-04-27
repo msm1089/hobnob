@@ -1,71 +1,87 @@
 import assert from 'assert';
-import generateESClientGetStub from '../../../tests/stubs/elasticsearch/client/get';
-import retrieve from '.';
+import ValidationError from '../../../validators/errors/validation-error';
+import validator from '../../../validators/users/search';
+import generateESClientSearchStub, {
+  ES_SEARCH_RESULTS
+} from '../../../tests/stubs/elasticsearch/client/search';
 
-const TEST_USER_ID = 'TEST_USER_ID';
-const req = {
-  params: {
-    userId: TEST_USER_ID
+import search from '.';
+
+const SEARCH_TERM = 'SEARCH_TERM';
+const requestFactory = {
+  empty() {
+    return {
+      query: {
+        query: ''
+      }
+    };
+  },
+  nonEmpty() {
+    return {
+      query: {
+        query: SEARCH_TERM
+      }
+    };
   }
 };
 
-describe('Engine - User - Retrieve', function() {
+describe('Engine - User - Search', function() {
   let db;
+  let req;
   let promise;
-  describe('When invoked', function() {
-    beforeEach(function() {
-      db = {
-        get: generateESClientGetStub.success()
-      };
-      return retrieve(req, db);
+  describe('When invoked', () => {
+    beforeEach(() => {
+      db = { search: generateESClientSearchStub.success() };
     });
-
-    it("should call the client instance's get method with the correct params", function() {
-      assert.deepEqual(db.get.getCall(0).args[0], {
-        index: process.env.ELASTICSEARCH_INDEX,
-        type: 'user',
-        id: TEST_USER_ID
+    describe('and the search query is empty', () => {
+      beforeEach(() => {
+        req = requestFactory.empty();
+        return search(req, db, validator, ValidationError);
+      });
+      it("should call the client instance's search method with the correct params", () => {
+        assert.deepEqual(db.search.getCall(0).args[0], {
+          index: process.env.ELASTICSEARCH_INDEX,
+          type: 'user',
+          _sourceExcludes: 'password'
+        });
       });
     });
-  });
-  describe('When the client.get operation is successful', function() {
-    beforeEach(function() {
-      db = {
-        get: generateESClientGetStub.success()
-      };
-      promise = retrieve(req, db);
+    describe('and the search query is not empty', () => {
+      beforeEach(() => {
+        req = requestFactory.nonEmpty();
+        return search(req, db, validator, ValidationError);
+      });
+      it("should call the client instance's search method with the correct params", () => {
+        assert.deepEqual(db.search.getCall(0).args[0], {
+          index: process.env.ELASTICSEARCH_INDEX,
+          type: 'user',
+          q: SEARCH_TERM,
+          _sourceExcludes: 'password'
+        });
+      });
     });
-    it('should return with a promise that resolves to an object', function() {
-      return promise.then(res => assert(typeof res === 'object'));
+    describe('When the client.search operation is successful', () => {
+      beforeEach(() => {
+        promise = search(req, db, validator, ValidationError);
+      });
+      it('should return with a promise that resolves to an array of objects', function() {
+        return promise.then(result =>
+          assert.deepEqual(result, ES_SEARCH_RESULTS.hits.hits.map(hit => hit._source))
+        );
+      });
     });
-  });
-  describe('When the client.get operation is unsuccessful', function() {
-    describe('Because the user does not exists', function() {
+    describe('When the client.search operation is unsuccessful', function() {
       beforeEach(function() {
-        db = {
-          get: generateESClientGetStub.notFound()
-        };
-        promise = retrieve(req, db);
+        db = { search: generateESClientSearchStub.failure() };
+        promise = search(req, db, validator, ValidationError);
       });
-      it('should return with a promise that rejects with an Error object', function() {
-        return promise.catch(error => assert(error instanceof Error));
-      });
-      it("which has a message property set to 'Not Found'", function() {
-        return promise.catch(error => assert.equal(error.message, 'Not Found'));
-      });
-    });
-    describe('Because of other errors', function() {
-      beforeEach(function() {
-        db = {
-          get: generateESClientGetStub.failure()
-        };
-        promise = retrieve(req, db);
-      });
-      it('should return with a promise that rejects with an Error object', function() {
-        return promise.catch(error => assert(error instanceof Error));
-      });
-      it("which has a message property set to 'Internal Server Error'", function() {
-        return promise.catch(error => assert.equal(error.message, 'Internal Server Error'));
+      describe('should return with a promise that rejects', function() {
+        it('with an Error object', function() {
+          return promise.catch(error => assert(error instanceof Error));
+        });
+        it("that has the mesage 'Internal Server Error'", function() {
+          return promise.catch(error => assert.equal(error.message, 'Internal Server Error'));
+        });
       });
     });
   });
