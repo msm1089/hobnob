@@ -22,7 +22,7 @@
     "test:unit:coverage": "nyc --reporter=html --reporter=text npm run test:unit",
     "test:integration": "dotenv -e envs/test.env -e envs/.env mocha -- \"src/**/*.integration.test.js\" --require @babel/register",
     "test:integration:coverage": "nyc --reporter=html --reporter=text npm run test:integration",
-    "test": "yarn run test:e2e:travis && yarn run test:unit && yarn run test:integration",
+    "test": "yarn run test:e2e && yarn run test:unit && yarn run test:integration",
     "test:coverage": "nyc --reporter=html --reporter=text yarn run test",
     "test:serve": "dotenv -e envs/test.env -e envs/.env babel-node src/index.js",
     "serve": "yarn run build && dotenv -e envs/.env pm2 start dist/index.js",
