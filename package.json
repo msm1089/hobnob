@@ -24,7 +24,7 @@
     "test": "yarn run test:e2e && yarn run test:unit && yarn run test:integration",
     "test:coverage": "nyc --reporter=html --reporter=text yarn run test",
     "test:serve": "dotenv -e envs/test.env -e envs/.env babel-node src/index.js",
-    "serve": "yarn run build && dotenv -e envs/test.env -e envs/.env node dist/index.js",
+    "serve": "yarn run build && dotenv -e envs/.env pm2 start dist/index.js",
     "debug": "dotenv -e envs/test.env -e envs/.env node --inspect-brk dist/index.js",
     "compile": "babel src --out-dir dist --source-maps --watch"
   },
@@ -60,6 +60,7 @@
     "nodemon": "^1.18.10",
     "nyc": "^13.3.0",
     "object-path": "^0.11.4",
+    "pm2": "^3.5.0",
     "prettier": "^1.16.4",
     "rimraf": "^2.6.3",
     "sinon": "^7.2.6",
