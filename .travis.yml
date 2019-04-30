@@ -9,8 +9,8 @@ services:
   - elasticsearch
 before_install:
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.6.1.msi
-  - start /wait msiexec.exe /i elasticsearch-7.0.0.msi /qn
-  - sc  start elasticsearch
+  - start /wait msiexec.exe /i elasticsearch-6.1.msi /qn
+  - sc  start elasticsearch-6.6.1
 before_script:
   - sleep 10
 env:
