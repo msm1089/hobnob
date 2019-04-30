@@ -10,7 +10,7 @@ services:
 before_install:
   - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.6.1.msi
   - start /wait msiexec.exe /i elasticsearch-6.6.1.msi /qn
-  - cd C:\Program Files\Elastic\Elasticsearch\6.6.1\bin
+  - cd "C:\Program Files\Elastic\Elasticsearch\6.6.1\bin"
   - elasticsearch-service.bat install
 before_script:
   - sleep 10
