@@ -1,35 +1,18 @@
 #!/usr/bin/env bash
+
 RETRY_INTERVAL=${RETRY_INTERVAL:-0.2}
-echo Setting up environment for end-to-end tests...
-yarn run build > /dev/null
-echo Checking elasticsearch service is running...
-yarn run es-init > /dev/null
-curl --silent -o /dev/null -X DELETE "$ELASTICSEARCH_HOSTNAME:$ELASTICSEARCH_PORT/$ELASTICSEARCH_INDEX"
-echo "Ensuring test server is (re)started..."
-if netstat -aon | grep "0.0.0.0:$SERVER_PORT" | grep "LISTENING"; then
-  echo Test server is running...
-  pm2 delete serve
-  until ! netstat -aon | grep "0.0.0.0:$SERVER_PORT" | grep "LISTENING"; do
-    echo Waiting for test server to stop...
-    sleep $RETRY_INTERVAL
-  done
-  echo  Restarting...
-  pm2 start ./scripts/serve.js
-  until netstat -aon | grep "0.0.0.0:$SERVER_PORT" | grep "LISTENING"; do
-    echo Waiting for test server to start...
-    sleep $RETRY_INTERVAL
-  done
-  echo Test server restarted...
-fi > /dev/null
-if ! netstat -aon | grep "0.0.0.0:$SERVER_PORT" | grep "LISTENING"; then
-  echo Test server is not running...
-  pm2 start ./scripts/serve.js
-  until netstat -aon | grep "0.0.0.0:$SERVER_PORT" | grep "LISTENING"; do
-    echo Waiting for test server to start...
-    sleep $RETRY_INTERVAL
-  done
-  echo Test server started...
-fi > /dev/null
-echo Running tests...
+
+# Run our API server as a background process
+yarn run test:serve &
+
+until ss -lnt | grep -q :$SERVER_PORT; do
+  sleep $RETRY_INTERVAL
+done
+
 npx cucumber-js spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps
-pm2 delete serve
+
+if [[ -z $TRAVIS_COMMIT && -z $JENKINS ]]; then
+  kill -15 0
+fi
+
+exit 0
