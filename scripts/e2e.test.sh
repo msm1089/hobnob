@@ -23,5 +23,3 @@ npx cucumber-js spec/cucumber/features --require-module @babel/register --requir
 if [[ -z $TRAVIS_COMMIT && -z $JENKINS ]]; then
   kill -15 0
 fi
-
-#exit 0
