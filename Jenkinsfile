@@ -13,7 +13,7 @@ node {
                      'ELASTICSEARCH_PORT=9200',
                      'ELASTICSEARCH_INDEX=test']) {
               stage('Installing Node Packages') {
-                sh 'npm install'
+                sh 'yarn'
               }
               stage('Waiting') {
                 sh 'until curl --silent $DB_PORT_9200_TCP_ADDR:$ELASTICSEARCH_PORT -w "" -o /dev/null; do sleep 1; done'
