@@ -289,7 +289,7 @@ Then(/^the response should contain (\d+) items$/, function(count) {
   assert.equal(this.responsePayload.length, count);
 });
 
-it('should return the correct string when error.keyword is "pattern"', function() {
+Then('should return the correct string when error.keyword is "pattern"', function() {
   const errors = [
     {
       keyword: 'pattern',
