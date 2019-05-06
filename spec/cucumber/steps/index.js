@@ -4,8 +4,6 @@ import { When, Then, Given } from 'cucumber';
 import elasticsearch from 'elasticsearch';
 import objectPath from 'object-path';
 import jsonfile from 'jsonfile';
-import { convertStringToArray } from './utils';
-
 import { getValidPayload, convertStringToArray, processPath } from './utils';
 
 const client = new elasticsearch.Client({
