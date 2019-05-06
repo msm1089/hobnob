@@ -19,5 +19,3 @@ else
         done
 fi
 npx cucumber-js spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps
-
-exit 0
