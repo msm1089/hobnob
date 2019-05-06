@@ -287,5 +287,5 @@ Then(/^the first item of the response should have property ([\w.]+) set to (.+)$
 });
 
 Then(/^the response should contain (\d+) items$/, function(count) {
-  assert.equal(this.responsePayload.length, 100);
+  assert.equal(this.responsePayload.length, count);
 });
