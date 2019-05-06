@@ -19,7 +19,3 @@ else
         done
 fi
 npx cucumber-js spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps
-
-if [[ -z $TRAVIS_COMMIT && -z $JENKINS ]]; then
-  kill -15 0
-fi
