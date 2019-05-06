@@ -14,6 +14,9 @@ function generateValidationErrorMessage(errors, pathPrefix = '') {
       error.params.additionalProperty
     }'`;
   }
+  if (error.keyword === 'pattern') {
+    return `The '${pathPrefix}${error.dataPath}' field should be a valid bcrypt digest`;
+  }
   return 'The object is not valid';
 }
 

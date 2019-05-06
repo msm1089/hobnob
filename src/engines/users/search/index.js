@@ -6,7 +6,7 @@ function search(req, db, validator, ValidationError) {
   const query = {
     index: process.env.ELASTICSEARCH_INDEX,
     type: 'user',
-    _sourceExcludes: 'password'
+    _sourceExcludes: 'digest'
   };
 
   if (req.query.query !== '') {

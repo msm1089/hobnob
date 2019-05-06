@@ -3,7 +3,7 @@ Feature: Update User Profile
 
    Background: Create two Users and logs in with the first user's account
 
-     Given 1 new users are created with random password and email
+     Given 1 new users are created with random digest and email
 
    Scenario Outline: Bad Client Requests
 

@@ -24,7 +24,8 @@ describe('Engine - User - Retrieve', function() {
       assert.deepEqual(db.get.getCall(0).args[0], {
         index: process.env.ELASTICSEARCH_INDEX,
         type: 'user',
-        id: TEST_USER_ID
+        id: TEST_USER_ID,
+        _sourceExcludes: 'digest'
       });
     });
   });

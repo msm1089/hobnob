@@ -4,6 +4,7 @@ import { When, Then, Given } from 'cucumber';
 import elasticsearch from 'elasticsearch';
 import objectPath from 'object-path';
 import jsonfile from 'jsonfile';
+import { convertStringToArray } from './utils';
 
 import { getValidPayload, convertStringToArray, processPath } from './utils';
 
@@ -289,3 +290,28 @@ Then(/^the first item of the response should have property ([\w.]+) set to (.+)$
 Then(/^the response should contain (\d+) items$/, function(count) {
   assert.equal(this.responsePayload.length, count);
 });
+
+it('should return the correct string when error.keyword is "pattern"', function() {
+  const errors = [
+    {
+      keyword: 'pattern',
+      dataPath: '.test.path'
+    }
+  ];
+  const actualErrorMessage = generateValidationErrorMessage(errors);
+  const expectedErrorMessage = "The '.test.path' field should be a valid bcrypt digest";
+  assert.equal(actualErrorMessage, expectedErrorMessage);
+});
+
+Then(
+  /^the ([\w.]+) property of the response should be the same as context\.([\w.]+) but without the ([\w.]+) fields?$/,
+  function(responseProperty, contextProperty, missingFields) {
+    const contextObject = objectPath.get(this, contextProperty);
+    const fieldsToDelete = convertStringToArray(missingFields);
+    fieldsToDelete.forEach(field => delete contextObject[field]);
+    assert.deepEqual(
+      objectPath.get(this.responsePayload, responseProperty === 'root' ? '' : responseProperty),
+      contextObject
+    );
+  }
+);
