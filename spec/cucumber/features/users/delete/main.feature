@@ -1,3 +1,4 @@
+@users
 Feature: Delete User by ID
 
   Clients should be able to send a request to our API in order to delete an user.

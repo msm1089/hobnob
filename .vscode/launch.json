@@ -2,35 +2,21 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug",
       "type": "node",
       "request": "launch",
-      "name": "Node",
-      "program": "${file}",
-      "protocol": "inspector"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch index.js",
       "program": "${workspaceRoot}/src/index.js",
-      "protocol": "inspector",
+      "stopOnEntry": false,
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/babel-node",
+      "outFiles": ["${workspaceRoot}/dist/**/*.js"],
       "envFile": "${workspaceFolder}/envs/.env",
       "env": {
         "BABEL_ENV": "debug",
         "ELASTICSEARCH_INDEX": "test",
         "SERVER_PORT": "8888"
       },
-      "outFiles": ["${workspaceRoot}/dist/**/*.js"]
-    },
-    {
-      "name": "Node with Experimental Modules",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["--experimental-modules"],
-      "program": "${file}",
-      "protocol": "inspector"
+      "preLaunchTask": "build"
     }
-  ],
-  "compounds": []
+  ]
 }

@@ -6,7 +6,11 @@ function getValidPayload(type, context = {}) {
     case 'create user':
       return {
         email: 'e@ma.il',
-        password: 'password'
+        digest: '$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy'
+      };
+    case 'retrieve salt':
+      return {
+        email: context.email || 'e@ma.il'
       };
     case 'replace user profile':
       return {
