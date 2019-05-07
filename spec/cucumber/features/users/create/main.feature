@@ -1,3 +1,4 @@
+@users
 Feature: Create User
 
   Clients should be able to send a request to our API in order to create a
@@ -9,12 +10,12 @@ Feature: Create User
     If the client sends a POST request to /users with an empty payload, it
     should receive a response with a 4xx HTTP status code.
 
-      When the client creates a POST request to /users
-        And attaches a generic <payloadType> payload
-        And sends the request
-      Then our API should respond with a <statusCode> HTTP status code
-        And the payload of the response should be a JSON object
-        And contains a message property which says <message>
+    When the client creates a POST request to /users
+      And attaches a generic <payloadType> payload
+      And sends the request
+    Then our API should respond with a <statusCode> HTTP status code
+      And the payload of the response should be a JSON object
+      And contains a message property which says <message>
 
     Examples:
 
@@ -39,6 +40,7 @@ Feature: Create User
     | digest        | The '.digest' field is missing |
 
   Scenario Outline: Request Payload with Properties of Unsupported Type
+    
     When the client creates a POST request to /users
       And attaches a Create User payload where the <field> field is not a <type>
       And sends the request
@@ -89,11 +91,11 @@ Feature: Create User
 
     Examples:
 
-    | payload                                                                        | message                                                   |
-    | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"foo":"bar"}}                     | The '.profile' object does not support the field 'foo'    |
-    | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"name":{"first":"Jane","a":"b"}}} | The '.profile.name' object does not support the field 'a' |
-    | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"summary":0}}                     | The '.profile.summary' field must be of type string       |
-    | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"bio":0}}                         | The '.profile.bio' field must be of type string           |
+    | payload                                                                                                                                 | message                                                          |
+    | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"foo":"bar"}}                     | The '.profile' object does not support the field 'foo'        |
+    | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"name":{"first":"Jane","a":"b"}}} | The '.profile.name' object does not support the field 'a'   |
+    | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"summary":0}}                     | The '.profile.summary' field must be of type string            |
+    | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"bio":0}}                         | The '.profile.bio' field must be of type string                  |
 
   Scenario Outline: Valid Profile
 
@@ -116,6 +118,7 @@ Feature: Create User
     | {"email":"e@ma.il","digest":"$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy","profile":{"summary":"summary"}}                       |
 
   Scenario Outline: Request Payload with invalid digest format
+    
     When the client creates a POST request to /users
       And attaches a Create User payload where the digest field is exactly <digest>
       And sends the request

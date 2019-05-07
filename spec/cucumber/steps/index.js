@@ -313,3 +313,12 @@ Then(
     );
   }
 );
+
+When(/^set a valid (.+) query string$/, function(payloadType) {
+  this.query = getValidPayload(payloadType, this);
+  this.request.query(this.query);
+});
+
+Then(/^the payload should be equal to context.([\w-]+)$/, function(contextpath) {
+  assert.equal(this.responsePayload, objectPath.get(this, contextpath));
+});

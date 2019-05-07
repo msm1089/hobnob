@@ -3,12 +3,12 @@ function injectHandlerDependencies(
   db,
   handlerToEngineMap,
   handlerToValidatorMap,
-  ValidationError
+  ...remainingArguments
 ) {
   const engine = handlerToEngineMap.get(handler);
   const validator = handlerToValidatorMap.get(handler);
   return (req, res) => {
-    handler(req, res, db, engine, validator, ValidationError);
+    handler(req, res, db, engine, validator, ...remainingArguments);
   };
 }
 

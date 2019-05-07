@@ -2,6 +2,7 @@ import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
+import { getSalt } from 'bcryptjs';
 
 import checkEmptyPayload from './middlewares/check-empty-payload';
 import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
@@ -19,6 +20,7 @@ import updateProfileValidator from './validators/profile/update';
 
 // Handlers
 import createUserHandler from './handlers/users/create';
+import retrieveSaltHandler from './handlers/auth/salt/retrieve';
 import retrieveUserHandler from './handlers/users/retrieve';
 import deleteUserHandler from './handlers/users/delete';
 import searchUserHandler from './handlers/users/search';
@@ -27,6 +29,7 @@ import updateProfileHandler from './handlers/profile/update';
 
 // Engines
 import createUserEngine from './engines/users/create';
+import retrieveSaltEngine from './engines/auth/salt/retrieve';
 import retrieveUserEngine from './engines/users/retrieve';
 import deleteUserEngine from './engines/users/delete';
 import searchUserEngine from './engines/users/search';
@@ -35,6 +38,7 @@ import updateProfileEngine from './engines/profile/update';
 
 const handlerToEngineMap = new Map([
   [createUserHandler, createUserEngine],
+  [retrieveSaltHandler, retrieveSaltEngine],
   [retrieveUserHandler, retrieveUserEngine],
   [deleteUserHandler, deleteUserEngine],
   [searchUserHandler, searchUserEngine],
@@ -69,6 +73,16 @@ app.post(
     handlerToEngineMap,
     handlerToValidatorMap,
     ValidationError
+  )
+);
+app.get(
+  '/salt',
+  injectHandlerDependencies(
+    retrieveSaltHandler,
+    client,
+    handlerToEngineMap,
+    handlerToValidatorMap,
+    getSalt
   )
 );
 app.get(
