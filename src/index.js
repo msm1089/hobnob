@@ -11,6 +11,7 @@ import errorHandler from './middlewares/error-handler';
 
 import injectHandlerDependencies from './utils/inject-handler-dependencies';
 import ValidationError from './validators/errors/validation-error';
+import generateFakeSalt from './utils/generate-fake-salt';
 
 // Validators
 import createUserValidator from './validators/users/create';
@@ -82,7 +83,8 @@ app.get(
     client,
     handlerToEngineMap,
     handlerToValidatorMap,
-    getSalt
+    getSalt,
+    generateFakeSalt
   )
 );
 app.get(
@@ -96,7 +98,7 @@ app.get(
   )
 );
 app.get(
-  '/users/',
+  '/users',
   injectHandlerDependencies(
     searchUserHandler,
     client,
