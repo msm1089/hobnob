@@ -68,7 +68,8 @@
     "body-parser": "^1.18.3",
     "elasticsearch": "^15.4.1",
     "express": "^4.16.4",
-    "random-seed": "^0.3.0"
+    "random-seed": "^0.3.0",
+    "special-escape": "^0.1.0"
   },
   "husky": {
     "hooks": {

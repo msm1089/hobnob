@@ -1,3 +1,4 @@
+@auth
 Feature: Retrieve Salt and Parameters
 
   Test that we can create a user using a digest and then retrieve information about the digest's salt and parameters successfully
