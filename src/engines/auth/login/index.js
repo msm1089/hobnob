@@ -1,4 +1,7 @@
 import specialEscape from 'special-escape';
+import fs from 'fs';
+
+const privateKey = fs.readFileSync('keys/key');
 
 const specialChars = [
   '+',
@@ -25,7 +28,7 @@ const specialChars = [
   '/'
 ];
 
-function loginUser(req, db, validator, ValidationError) {
+function loginUser(req, db, validator, ValidationError, sign) {
   const validationResults = validator(req);
   if (validationResults instanceof ValidationError) {
     return Promise.reject(validationResults);
@@ -42,7 +45,10 @@ function loginUser(req, db, validator, ValidationError) {
     })
     .then(res => {
       if (res.hits.total > 0) {
-        return 'IDENTIFIER';
+        const payload = { sub: res.hits.hits[0]._id };
+        const options = { algorithm: 'RS512' };
+        const token = sign(payload, privateKey, options);
+        return token;
       }
       return Promise.reject(new Error('Not Found'));
     });

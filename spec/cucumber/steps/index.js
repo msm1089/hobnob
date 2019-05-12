@@ -1,4 +1,5 @@
-import assert from 'assert';
+import assert, { AssertionError } from 'assert';
+import { decode } from 'jsonwebtoken';
 import superagent from 'superagent';
 import { When, Then, Given } from 'cucumber';
 import elasticsearch from 'elasticsearch';
@@ -326,4 +327,15 @@ Then(/^the payload should be equal to context.([\w-]+)$/, function(contextpath) 
 Then(/^the response string should satisfy the regular expression (.+)$/, function(regex) {
   const re = new RegExp(regex.trim().replace(/^\/|\/$/g, ''));
   assert.equal(re.test(this.responsePayload), true);
+});
+
+Then(/^the JWT payload should have a claim with name (\w+) equal to context.([\w-]+)$/, function(
+  claimName,
+  contextPath
+) {
+  const decodedTokenPayload = decode(this.responsePayload);
+  if (decodedTokenPayload === null) {
+    throw new AssertionError();
+  }
+  assert.equal(decodedTokenPayload[claimName], objectPath.get(this, contextPath));
 });

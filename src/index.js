@@ -3,6 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
 import { getSalt } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
 
 import checkEmptyPayload from './middlewares/check-empty-payload';
 import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
@@ -99,7 +100,8 @@ app.post(
     client,
     handlerToEngineMap,
     handlerToValidatorMap,
-    ValidationError
+    ValidationError,
+    sign
   )
 );
 app.get(
