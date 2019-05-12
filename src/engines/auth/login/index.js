@@ -1,7 +1,4 @@
 import specialEscape from 'special-escape';
-import fs from 'fs';
-
-const privateKey = fs.readFileSync('keys/key');
 
 const specialChars = [
   '+',
@@ -47,7 +44,7 @@ function loginUser(req, db, validator, ValidationError, sign) {
       if (res.hits.total > 0) {
         const payload = { sub: res.hits.hits[0]._id };
         const options = { algorithm: 'RS512' };
-        const token = sign(payload, privateKey, options);
+        const token = sign(payload, process.env.PRIVATE_KEY, options);
         return token;
       }
       return Promise.reject(new Error('Not Found'));
