@@ -14,7 +14,6 @@ before_script:
   - sleep 10
 env:
   global:
-    - TEMP=temp
     - NODE_ENV=test
     - SERVER_PROTOCOL=http
     - SERVER_HOSTNAME=localhost
