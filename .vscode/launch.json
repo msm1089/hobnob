@@ -17,6 +17,21 @@
         "SERVER_PORT": "8888"
       },
       "preLaunchTask": "build"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug:e2e",
+      "runtimeExecutable": "npm",
+      "cwd": "${workspaceRoot}",
+      "runtimeArgs": ["run", "debug"],
+      "envFile": "${workspaceFolder}/envs/.env",
+      "env": {
+        "BABEL_ENV": "debug",
+        "ELASTICSEARCH_INDEX": "test",
+        "SERVER_PORT": "8888"
+      },
+      "port": 1337
     }
   ]
 }

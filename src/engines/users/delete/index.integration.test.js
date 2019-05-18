@@ -16,6 +16,9 @@ const db = new elasticsearch.Client({
 const req = {
   params: {
     userId: USER_ID
+  },
+  user: {
+    id: USER_ID
   }
 };
 

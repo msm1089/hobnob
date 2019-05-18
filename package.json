@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf dist && babel src -d dist --copy-files",
+    "debug": "node --inspect=1337 --inspect-brk --nolazy node_modules/cucumber/bin/cucumber-js spec/cucumber/features/profile/replace --require-module @babel/register --require spec/cucumber/steps",
     "dev:serve": "yarn run build && dotenv -e envs/.env node dist/index.js",
     "dev:test": "yarn run test:e2e:prepare && yarn run test:unit && yarn run test:integration && yarn run test:e2e",
+    "dev:test:e2e": "yarn run test:e2e:prepare && yarn run test:e2e",
     "dev:watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
     "lint": "eslint src",

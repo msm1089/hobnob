@@ -16,6 +16,9 @@ describe('Engine - Profile - Update', function() {
       body: {},
       params: {
         userId: USER_ID
+      },
+      user: {
+        id: USER_ID
       }
     };
     db = { update: generateESClientUpdateStub.success() };

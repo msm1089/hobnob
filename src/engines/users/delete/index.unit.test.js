@@ -6,6 +6,9 @@ const TEST_USER_ID = 'TEST_USER_ID';
 const req = {
   params: {
     userId: TEST_USER_ID
+  },
+  user: {
+    id: TEST_USER_ID
   }
 };
 let db;

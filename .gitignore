@@ -77,4 +77,4 @@ typings/
 
 # Additional
 dist/
-keys/key
+keys/key*
