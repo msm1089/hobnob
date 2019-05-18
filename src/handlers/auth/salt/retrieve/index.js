@@ -1,5 +1,5 @@
-function retrieveSalt(req, res, db, engine, _validator, getSalt) {
-  return engine(req, db, getSalt)
+function retrieveSalt(req, res, db, engine, _validator, getSalt, generateFakeSalt) {
+  return engine(req, db, getSalt, generateFakeSalt)
     .then(
       result => {
         res.status(200);

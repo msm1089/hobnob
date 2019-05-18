@@ -3,15 +3,17 @@ import objectPath from 'object-path';
 function getValidPayload(type, context = {}) {
   const lowercaseType = type.toLowerCase();
   switch (lowercaseType) {
+    case 'login':
     case 'create user':
       return {
-        email: 'e@ma.il',
-        digest: '$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy'
+        email: context.email || 'e@ma.il',
+        digest: context.digest || '$2y$10$6.5uPfJUCQlcuLO/SNVX3u1yU6LZv.39qOzshHXJVpaq3tJkTwiAy'
       };
     case 'retrieve salt':
       return {
         email: context.email || 'e@ma.il'
       };
+
     case 'replace user profile':
       return {
         summary: context.summary || 'foo'

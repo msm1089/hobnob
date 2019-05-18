@@ -1,4 +1,5 @@
-import assert from 'assert';
+import assert, { AssertionError } from 'assert';
+import { decode } from 'jsonwebtoken';
 import superagent from 'superagent';
 import { When, Then, Given } from 'cucumber';
 import elasticsearch from 'elasticsearch';
@@ -321,4 +322,37 @@ When(/^set a valid (.+) query string$/, function(payloadType) {
 
 Then(/^the payload should be equal to context.([\w-]+)$/, function(contextpath) {
   assert.equal(this.responsePayload, objectPath.get(this, contextpath));
+});
+
+Then(/^the response string should satisfy the regular expression (.+)$/, function(regex) {
+  const re = new RegExp(regex.trim().replace(/^\/|\/$/g, ''));
+  assert.equal(re.test(this.responsePayload), true);
+});
+
+Then(/^the JWT payload should have a claim with name (\w+) equal to context.([\w-]+)$/, function(
+  claimName,
+  contextPath
+) {
+  const decodedTokenPayload = decode(this.responsePayload);
+  if (decodedTokenPayload === null) {
+    throw new AssertionError();
+  }
+  assert.equal(decodedTokenPayload[claimName], objectPath.get(this, contextPath));
+});
+
+When(/^set the HTTP header field (?:"|')?([\w-]+)(?:"|')? to (?:"|')?(.+)(?:"|')?$/, function(
+  headerName,
+  value
+) {
+  this.request.set(headerName, value);
+});
+
+When(/^sets the Authorization header to a valid token$/, function() {
+  this.request.set('Authorization', `Bearer ${this.token}`);
+});
+
+When(/^sets the Authorization header to a token with wrong signature$/, function() {
+  // Appending anything to the end of the signature will invalidate it
+  const tokenWithInvalidSignature = `${this.token}a`;
+  this.request.set('Authorization', `Bearer ${tokenWithInvalidSignature}`);
 });

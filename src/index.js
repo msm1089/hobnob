@@ -3,20 +3,24 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
 import { getSalt } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
 
 import checkEmptyPayload from './middlewares/check-empty-payload';
 import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
 import checkContentTypeIsJson from './middlewares/check-content-type-is-json';
+import authenticate from './middlewares/authenticate';
 import errorHandler from './middlewares/error-handler';
 
 import injectHandlerDependencies from './utils/inject-handler-dependencies';
 import ValidationError from './validators/errors/validation-error';
+import generateFakeSalt from './utils/generate-fake-salt';
 
 // Validators
 import createUserValidator from './validators/users/create';
 import searchUserValidator from './validators/users/search';
 import replaceProfileValidator from './validators/profile/replace';
 import updateProfileValidator from './validators/profile/update';
+import loginValidator from './validators/auth/login';
 
 // Handlers
 import createUserHandler from './handlers/users/create';
@@ -26,6 +30,7 @@ import deleteUserHandler from './handlers/users/delete';
 import searchUserHandler from './handlers/users/search';
 import replaceProfileHandler from './handlers/profile/replace';
 import updateProfileHandler from './handlers/profile/update';
+import loginHandler from './handlers/auth/login';
 
 // Engines
 import createUserEngine from './engines/users/create';
@@ -35,6 +40,7 @@ import deleteUserEngine from './engines/users/delete';
 import searchUserEngine from './engines/users/search';
 import replaceProfileEngine from './engines/profile/replace';
 import updateProfileEngine from './engines/profile/update';
+import loginEngine from './engines/auth/login';
 
 const handlerToEngineMap = new Map([
   [createUserHandler, createUserEngine],
@@ -43,14 +49,16 @@ const handlerToEngineMap = new Map([
   [deleteUserHandler, deleteUserEngine],
   [searchUserHandler, searchUserEngine],
   [replaceProfileHandler, replaceProfileEngine],
-  [updateProfileHandler, updateProfileEngine]
+  [updateProfileHandler, updateProfileEngine],
+  [loginHandler, loginEngine]
 ]);
 
 const handlerToValidatorMap = new Map([
   [createUserHandler, createUserValidator],
   [searchUserHandler, searchUserValidator],
   [replaceProfileHandler, replaceProfileValidator],
-  [updateProfileHandler, updateProfileValidator]
+  [updateProfileHandler, updateProfileValidator],
+  [loginHandler, loginValidator]
 ]);
 
 const client = new elasticsearch.Client({
@@ -64,6 +72,7 @@ app.use(checkEmptyPayload);
 app.use(checkContentTypeIsSet);
 app.use(checkContentTypeIsJson);
 app.use(bodyParser.json({ limit: 1e6 }));
+app.use(authenticate);
 
 app.post(
   '/users',
@@ -82,7 +91,19 @@ app.get(
     client,
     handlerToEngineMap,
     handlerToValidatorMap,
-    getSalt
+    getSalt,
+    generateFakeSalt
+  )
+);
+app.post(
+  '/login',
+  injectHandlerDependencies(
+    loginHandler,
+    client,
+    handlerToEngineMap,
+    handlerToValidatorMap,
+    ValidationError,
+    sign
   )
 );
 app.get(
@@ -96,7 +117,7 @@ app.get(
   )
 );
 app.get(
-  '/users/',
+  '/users',
   injectHandlerDependencies(
     searchUserHandler,
     client,

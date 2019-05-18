@@ -1,6 +1,6 @@
 const NO_RESULTS_ERROR_MESSAGE = 'no-results';
 
-function retrieveSalt(req, db, getSalt) {
+function retrieveSalt(req, db, getSalt, generateFakeSalt) {
   if (!req.query.email) {
     return Promise.reject(new Error('Email not specified'));
   }
@@ -21,7 +21,13 @@ function retrieveSalt(req, db, getSalt) {
       const user = res.hits.hits[0];
       return user ? user._source.digest : Promise.reject(new Error(NO_RESULTS_ERROR_MESSAGE));
     })
-    .then(getSalt);
+    .then(getSalt)
+    .catch(err => {
+      if (err.message === NO_RESULTS_ERROR_MESSAGE) {
+        return generateFakeSalt(req.query.email);
+      }
+      return Promise.reject(new Error('Internal Server Error'));
+    });
 }
 
 export default retrieveSalt;
