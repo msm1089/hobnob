@@ -19,6 +19,7 @@ else
         done
 fi
 npx cucumber-js spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps
+
 if [[ "$OSTYPE" == "msys" ]]; then
         pm2 delete test:serve
 fi
