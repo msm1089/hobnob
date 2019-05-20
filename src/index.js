@@ -69,6 +69,17 @@ const client = new elasticsearch.Client({
 });
 const app = express();
 
+app.use((req, res, next) => {
+  res.header(
+    'Access-Control-Allow-Origin',
+    `${process.env.SWAGGER_UI_PROTOCOL}://${process.env.SWAGGER_UI_HOSTNAME}:${
+      process.env.SWAGGER_UI_PORT
+    }`
+  );
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
 app.use(checkEmptyPayload);
 app.use(checkContentTypeIsSet);
 app.use(checkContentTypeIsJson);
