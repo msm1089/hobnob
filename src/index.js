@@ -71,7 +71,7 @@ const app = express();
 
 const YAML = require('yamljs');
 // const swaggerDocument = YAML.load('../spec/openapi/hobnob.yaml');
-const swaggerDocument = YAML.load('C:/ReactProjects/hobnob/spec/openapi/hobnob.yaml');
+const swaggerDocument = YAML.load('./spec/openapi/hobnob.yaml');
 const options = {
   customCss: '.swagger-ui .topbar { display: none }'
 };
