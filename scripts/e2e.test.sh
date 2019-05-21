@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 RETRY_INTERVAL=${RETRY_INTERVAL:-0.2}
 
 # Run our API server as a background process
