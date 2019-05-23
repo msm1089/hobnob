@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
 import { getSalt } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-// import fs from 'fs';
+import fs from 'fs';
 
 import checkEmptyPayload from './middlewares/check-empty-payload';
 import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
@@ -76,7 +76,11 @@ app.use((req, res, next) => {
       process.env.SWAGGER_UI_PORT
     }`
   );
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.header('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, PATCH, DELETE');
   next();
 });
 
@@ -168,6 +172,18 @@ app.patch(
     ValidationError
   )
 );
+app.get('/openapi.yaml', (req, res, next) => {
+  fs.readFile(`${__dirname}/openapi.yaml`, (err, file) => {
+    if (err) {
+      res.status(500);
+      res.end();
+      return next();
+    }
+    res.write(file);
+    res.end();
+    return next();
+  });
+});
 
 app.use(errorHandler);
 
