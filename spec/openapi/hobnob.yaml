@@ -6,8 +6,8 @@ info:
     name: Support
     email: dan@danyll.com
 servers:
-  - url: http://http://api.waveform.ninja/api
-    description: Hobnob Server
+  - url: http://localhost:8080/
+    description: Local Development Server
 tags:
   - name: Authentication
     description: Authentication-related endpoints

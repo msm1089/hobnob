@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import elasticsearch from 'elasticsearch';
 import { getSalt } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
 
 import checkEmptyPayload from './middlewares/check-empty-payload';
 import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
@@ -69,13 +69,6 @@ const client = new elasticsearch.Client({
 });
 const app = express();
 
-const YAML = require('yamljs');
-// const swaggerDocument = YAML.load('../spec/openapi/hobnob.yaml');
-const swaggerDocument = YAML.load('./spec/openapi/hobnob.yaml');
-const options = {
-  customCss: '.swagger-ui .topbar { display: none }'
-};
-
 app.use((req, res, next) => {
   res.header(
     'Access-Control-Allow-Origin',
@@ -83,11 +76,14 @@ app.use((req, res, next) => {
       process.env.SWAGGER_UI_PORT
     }`
   );
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.header('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, PATCH, DELETE');
   next();
 });
 
-app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 app.use(checkEmptyPayload);
 app.use(checkContentTypeIsSet);
 app.use(checkContentTypeIsJson);
@@ -176,6 +172,18 @@ app.patch(
     ValidationError
   )
 );
+app.get('/openapi.yaml', (req, res, next) => {
+  fs.readFile(`${__dirname}/openapi.yaml`, (err, file) => {
+    if (err) {
+      res.status(500);
+      res.end();
+      return next();
+    }
+    res.write(file);
+    res.end();
+    return next();
+  });
+});
 
 app.use(errorHandler);
 
