@@ -74,6 +74,9 @@ app.use((req, res, next) => {
     'Access-Control-Allow-Origin',
     `${process.env.SWAGGER_UI_PROTOCOL}://${process.env.SWAGGER_UI_HOSTNAME}:${
       process.env.SWAGGER_UI_PORT
+    }`,
+    `${process.env.SERVER_EXTERNAL_PROTOCOL}://${process.env.SERVER_EXTERNAL_HOSTNAME}:${
+      process.env.SERVER_EXTERNAL_PORT
     }`
   );
   res.header(
