@@ -70,7 +70,23 @@ const client = new elasticsearch.Client({
 const app = express();
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const {
+    SWAGGER_UI_PROTOCOL,
+    SWAGGER_UI_HOSTNAME,
+    SWAGGER_UI_PORT,
+    CLIENT_PROTOCOL,
+    CLIENT_HOSTNAME,
+    CLIENT_PORT
+  } = process.env;
+  const allowedOrigins = [
+    `${SWAGGER_UI_PROTOCOL}://${SWAGGER_UI_HOSTNAME}`,
+    `${SWAGGER_UI_PROTOCOL}://${SWAGGER_UI_HOSTNAME}:${SWAGGER_UI_PORT}`,
+    `${CLIENT_PROTOCOL}://${CLIENT_HOSTNAME}`,
+    `${CLIENT_PROTOCOL}://${CLIENT_HOSTNAME}:${CLIENT_PORT}`
+  ];
+  if (allowedOrigins.includes(req.headers.origin)) {
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  }
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept, Authorization'

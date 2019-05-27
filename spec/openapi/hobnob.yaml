@@ -4,10 +4,10 @@ info:
   version: '1.0.0'
   contact:
     name: Support
-    email: dan@danyll.com
+    email: msm1089@yahoo.co.uk
 servers:
-  - url: http://localhost:8080/
-    description: Local Development Server
+  - url: http://api.waveform.ninja
+    description: Hobnob
 tags:
   - name: Authentication
     description: Authentication-related endpoints
@@ -59,14 +59,14 @@ components:
         email: e@ma.il
         digest: $2a$10$enCaroMp4gMvEmvCe4EuP.0d5FZ6yc0yUuSJ0pQTt4EO5MXvonUTm
         profile:
-          bio: Daniel is a species of JavaScript developer that is commonly found in Hong Kong and London. In 2015, Daniel opened his own digital agency called Brew, which specialized in the Meteor framework.
-          summary: JavaScript Developer
+          bio: Born on Caladan, son of Duke Leto and his concubine Jessica. Moved to the desert world Arrakis. Became the Kwisatz Haderach.
+          summary: Mu'ad D'hib!
           name:
-            first: Daniel
-            last: Li
+            first: Paul
+            last: Atreides
     UserLimited:
       title: Retrieve User Response Payload Schema
-      description: An User object with the digest field removed
+      description: A User object with the digest field removed
       properties:
         email:
           type: string
@@ -80,11 +80,11 @@ components:
       example:
         email: e@ma.il
         profile:
-          bio: Daniel is a species of JavaScript developer that is commonly found in Hong Kong and London. In 2015, Daniel opened his own digital agency called Brew, which specialized in the Meteor framework.
-          summary: JavaScript Developer
+          bio: Born on Caladan, son of Duke Leto and his concubine Jessica. Moved to the desert world Arrakis. Became the Kwisatz Haderach.
+          summary: Mu'ad D'hib!
           name:
-            first: Daniel
-            last: Li
+            first: Paul
+            last: Atreides
   responses:
     Success:
       description: Success
@@ -194,7 +194,7 @@ paths:
     get:
       tags:
         - Authentication
-      summary: Returns the salt of an user based on the user's email
+      summary: Returns the salt of a user based on the user's email
       description: Even if there are no users with the specified email, this endpoint will still return with a salt. This is to prevent the API leaking information about which email addresses are used to register on the platform.
       parameters:
         - name: email
