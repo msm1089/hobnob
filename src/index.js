@@ -5,6 +5,7 @@ import elasticsearch from 'elasticsearch';
 import { getSalt } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import fs from 'fs';
+import cors from 'cors';
 
 import checkEmptyPayload from './middlewares/check-empty-payload';
 import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
@@ -67,33 +68,48 @@ const client = new elasticsearch.Client({
     process.env.ELASTICSEARCH_PORT
   }`
 });
+
 const app = express();
 
-app.use((req, res, next) => {
-  const {
-    SERVER_EXTERNAL_PROTOCOL,
-    SERVER_EXTERNAL_HOSTNAME,
-    SERVER_EXTERNAL_PORT,
-    CLIENT_PROTOCOL,
-    CLIENT_HOSTNAME,
-    CLIENT_PORT
-  } = process.env;
-  const allowedOrigins = [
-    `${SERVER_EXTERNAL_PROTOCOL}://${SERVER_EXTERNAL_HOSTNAME}`,
-    `${SERVER_EXTERNAL_PROTOCOL}://${SERVER_EXTERNAL_HOSTNAME}:${SERVER_EXTERNAL_PORT}`,
-    `${CLIENT_PROTOCOL}://${CLIENT_HOSTNAME}`,
-    `${CLIENT_PROTOCOL}://${CLIENT_HOSTNAME}:${CLIENT_PORT}`
-  ];
-  if (allowedOrigins.includes(req.headers.origin)) {
-    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+const {
+  SERVER_EXTERNAL_PROTOCOL,
+  SERVER_EXTERNAL_HOSTNAME,
+  SERVER_EXTERNAL_PORT,
+  CLIENT_PROTOCOL,
+  CLIENT_HOSTNAME,
+  CLIENT_PORT
+} = process.env;
+
+const whitelist = [
+  `${SERVER_EXTERNAL_PROTOCOL}://${SERVER_EXTERNAL_HOSTNAME}`,
+  `${SERVER_EXTERNAL_PROTOCOL}://${SERVER_EXTERNAL_HOSTNAME}:${SERVER_EXTERNAL_PORT}`,
+  `${CLIENT_PROTOCOL}://${CLIENT_HOSTNAME}`,
+  `${CLIENT_PROTOCOL}://${CLIENT_HOSTNAME}:${CLIENT_PORT}`
+];
+
+/* var corsOptions = {
+  origin: function(origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  optionsSuccessStatus: 200
+}; */
+
+const corsOptionsDelegate = (req, callback) => {
+  let corsOptions;
+  if (whitelist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false }; // disable CORS for this request
   }
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.header('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, PATCH, DELETE');
-  next();
-});
+  corsOptions.optionsSuccessStatus = 200;
+  callback(null, corsOptions); // callback expects two parameters: error and options
+};
+
+app.use(cors(corsOptionsDelegate));
 
 app.use(checkEmptyPayload);
 app.use(checkContentTypeIsSet);
