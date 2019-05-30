@@ -6,7 +6,7 @@ info:
     name: Support
     email: msm1089@yahoo.co.uk
 servers:
-  - url: http://api.waveform.ninja
+  - url: http://api.waveform.ninja/
     description: Hobnob
 tags:
   - name: Authentication
