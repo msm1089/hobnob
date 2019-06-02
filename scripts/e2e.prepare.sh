@@ -3,7 +3,7 @@
 # Make sure the port is not already bound
 if [[ "$OSTYPE" == "msys" ]]; then
         if netstat -aon | grep "0.0.0.0:$SERVER_PORT" | grep "LISTENING"; then
-                pm2 delete all
+                npx pm2 delete all
         fi
 else
         if ss -lnt | grep -q :$SERVER_PORT; then
