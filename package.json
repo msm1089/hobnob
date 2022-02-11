@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.0",
-    "ajv": "^6.10.0",
+    "ajv": "^6.12.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
