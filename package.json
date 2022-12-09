@@ -74,7 +74,7 @@
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "elasticsearch": "^15.4.1",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
     "pm2": "^3.5.0",
     "random-seed": "^0.3.0",
